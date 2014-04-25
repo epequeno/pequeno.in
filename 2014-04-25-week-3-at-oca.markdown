@@ -6,26 +6,16 @@ comments: true
 categories: 
 ---
 
-{% codeblock lang:js %}
+We are now at the end of our 3rd week at the OCA and the pace is really starting to pick up. We've already been given so much information and now we are getting to the point where we can start putting the pieces together. As fried as we feel already, we know the best is yet to come.
 
-var fs = require('fs');
+<!-- more -->
 
-module.exports = function(dir, filter, callback) {
-  var regex = new RegExp("\\." + filter + "$");
-  fs.readdir(dir, function(err, list) {
-    if (err) {
-      return callback(err, null); 
-    }
-    else {
-      results = [];
-      for (i = 0; i < list.length; i++) {
-        if (regex.test(list[i])) {
-          results.push(list[i]);
-        }
-      }
-    callback(null, results);
-  }
-});
-};
+Week one was a dash through linux, from introducing the concepts of opensource
+software to performing various administrative tasks. Our instructor [Coby Coleman](www.linkedin.com/pub/coby-coleman/85/2a8/475) had the insane task of taking dozens of complex topics and presenting them to the group, but he made
+sure we understood what we were doing along the way to get us ready to move forward.
 
-{% endcodeblock %}
+Week two the group really came together and became inspired by visting The Castle and meeting several Rackers. My favorite "green day" was volunteering at the [San Antonio Food Bank](www.safoodbank.org). We got work alongside a group of teenage volunteers and ended up moving *30,000*lbs. of food in just a few hours. It was incredible watching dozens of people work in unison to accomplish something that will impact thousands of lives in a positive way. 
+
+Week three has been a crash course in Cloud technologies. We learned about the full range of products RackSpace has to offer and how they can be used to create solutions for a wide range of real-world problems. It's exciting to know the power that can be weilded with cloud technologies. With the right application of load balancers, cloud databases and various other offerings, a customer with very large problems can rest at ease knowing the resources are there to meet the demands and even furthur that world-class support is there to back up those up.
+
+Next week we dive into MySQL and continue to integrate everything we've learned so far; we're just getting started.
