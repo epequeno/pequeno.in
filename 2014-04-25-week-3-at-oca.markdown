@@ -1,0 +1,31 @@
+---
+layout: post
+title: "Week 3 at OCA"
+date: 2014-04-25 01:11:09 -0500
+comments: true
+categories: 
+---
+
+{% codeblock lang:js %}
+
+var fs = require('fs');
+
+module.exports = function(dir, filter, callback) {
+  var regex = new RegExp("\\." + filter + "$");
+  fs.readdir(dir, function(err, list) {
+    if (err) {
+      return callback(err, null); 
+    }
+    else {
+      results = [];
+      for (i = 0; i < list.length; i++) {
+        if (regex.test(list[i])) {
+          results.push(list[i]);
+        }
+      }
+    callback(null, results);
+  }
+});
+};
+
+{% endcodeblock %}
