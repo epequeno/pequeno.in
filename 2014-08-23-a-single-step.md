@@ -5,5 +5,4 @@ published: false
 tags: rhce
 ---
 
-I'm beginning the 
-
+I'm beginning to study for the thing.
