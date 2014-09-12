@@ -1,3 +1,10 @@
+layout: post
+date: "2014-09-11 19:24:10 -0500"
+comments: true
+categories: 
+  - RHCE
+  - Red Hat
+
 I passed my RHCE for RHEL 6 today!
 
 * [RHCSA verification](https://www.redhat.com/wapps/training/certification/verify.html?certNumber=140-090-945&isSearch=False&verify=Verify "its legit")
