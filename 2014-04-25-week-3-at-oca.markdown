@@ -3,7 +3,6 @@ layout: post
 title: "Week 3 at OCA"
 date: 2014-04-25 01:11:09 -0500
 comments: true
-categories: 
 ---
 
 We are now at the end of our 3rd week at the OCA and the pace is really starting to pick up. We've already been given so much information and now we are getting to the point where we can start putting the pieces together. As fried as we feel already, we know the best is yet to come.
