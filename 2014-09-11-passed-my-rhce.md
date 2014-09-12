@@ -1,5 +1,6 @@
 ---
 layout: post
+title: Passed my RHCE
 date: "2014-09-11 19:24:10 -0500"
 comments: true
 published: true
