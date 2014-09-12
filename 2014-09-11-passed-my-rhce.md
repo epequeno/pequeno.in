@@ -5,6 +5,7 @@ comments: true
 categories: 
   - RHCE
   - Red Hat
+published: true
 ---
 
 I passed my RHCE for RHEL 6 today!
@@ -16,5 +17,3 @@ I passed my RHCE for RHEL 6 today!
 ![right in the feels](/../img/goodman.jpg)
 
 As awesome as that is, I get to do the whole thing over again with RHEL 7 to actually begin to work towards my RHCA. My joy knows no bounds.
-
-
