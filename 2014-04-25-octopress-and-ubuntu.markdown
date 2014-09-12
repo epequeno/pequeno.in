@@ -1,9 +1,13 @@
 ---
 layout: post
-title: "octopress and ubuntu"
-date: 2014-04-25 13:24:10 -0500
+title: octopress and ubuntu
+date: "2014-04-25 13:24:10 -0500"
 comments: true
-categories: [tutorial, ubuntu, octopress] 
+categories: 
+  - tutorial
+  - ubuntu
+  - octopress
+published: true
 ---
 
 I've been a big fan of [octopress](http://octopress.org/) and today I'm going to walkthrough getting a blog setup using a RackSpace cloud instance and the latest version of [Ubuntu](https://wiki.ubuntu.com/TrustyTahr/ReleaseNotes) (14.04, Trusty Tahr).
@@ -92,5 +96,3 @@ octopress@octopress:/etc/nginx/sites-enabled$ vim default
 ```
 
 Change the `root` directive to the following: `root /usr/share/nginx/html/octopress/public;` Now, if you point your browser to your IP address you should see the default octopress theme. Happy blogging, hacker!
-
-
