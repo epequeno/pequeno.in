@@ -6,11 +6,7 @@ comments: true
 published: true
 ---
 
-I passed my RHCE for RHEL 6 today!
-
-* [RHCSA verification](https://www.redhat.com/wapps/training/certification/verify.html?certNumber=140-090-945&isSearch=False&verify=Verify "its legit")
-
-* [RHCE verification](https://www.redhat.com/wapps/training/certification/verify.html?certNumber=140-179-292&isSearch=False&verify=Verify "also totes 4 real")
+I [passed](https://www.redhat.com/wapps/training/certification/verify.html?certNumber=140-090-945&isSearch=False&verify=Verify) my RHCE for RHEL 6 today!
 
 ![right in the feels](/../img/goodman.jpg)
 
