@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Like Cerberus, but less nice"
-published: false
+published: true
 tags: rhce
 ---
 
@@ -13,4 +13,4 @@ I'm beginning to study for the [RHCA](http://www.redhat.com/en/services/certific
 * [EX436](http://www.redhat.com/en/services/training/ex436-red-hat-certificate-expertise-clustering-and-storage-management-exam) - Clustering and Storage Management
 * [EX442](http://www.redhat.com/en/services/training/ex442-red-hat-certificate-expertise-performance-tuning-exam) - Performance Tuning
 
-Over the course of the next several months I will be writing about the objectives and the process itself to journal my experiences and organize study notes. 
+Over the course of the next several months I will be writing about the objectives and the process itself to journal my experiences and organize study notes. I hope that they will be useful to others planning to pursue the same certification.
