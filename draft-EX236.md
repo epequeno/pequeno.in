@@ -7,9 +7,30 @@ published: false
 
 This is the first in my series of posts for each of the five exams I will take to earn the RHCA. To kick things off we begin with the EX236 - Hybrid Cloud Storage. This exam is closely related to RH436 - Enterprise Clustering and Storage Management.
 
-* Introduction
+* [Introduction](#intro)
+* [Deploy to physical and virtual hardware](#obj1)
+* [Configure a Red Hat Storage Server storage pool](#obj2)
+* [Create individual storage bricks](#obj3)
+* [Create various Red Hat Storage Server volumes](#obj4)
+    * [Distributed](#obj4-1)
+    * [Replicated](#obj4-2)
+    * [Distributed-replicated](#obj4-3)
+    * [Stripe-replicated](#obj4-4)
+    * [Distributed-striped](#obj4-5)
+    * [Distributed-striped-replicated](#obj4-6)
+* [Format the volumes with an appropriate file system](#obj5)
+* [Extend existing storage volumes](#obj6)
+* [Configure clients to use NFS](#obj7)
+* [Configure clients to use SMB](#obj8)
+* [Configure quotas and ACLs](#obj9)
+* [Configure IP failover for NFS-and SMB-based cluster services](#obj10)
+* [Configure geo-replication services](#obj11)
+* [Configure unified object storage](#obj12)
+* [Troubleshoot Red Hat Storage Server problems](#obj13)
+* [Monitor Red Hat Storage Server workloads](#obj14)
+* [Perform management tasks](#obj15)
 
-# Introduction
+# Introduction<a name="intro"></a>
 
 Ok, got my coffee, I've cleaned my work area, have my CentOS 7 VM fired up and ready to go let's take a look at the objectives. Hmm, CentOS 7 doesn't come with Red Hat Storage Server... great. There is however, a [workaroud][1] suggested by the GlusterFS team themselves: use the community version of glusterfs-server. They provide a link to the main download site for GlusterFS but since we are using CentOS you are going to have to dig a little deeper to get to the repo they provide.
 
@@ -22,6 +43,60 @@ From there we can follow the guide provided by [Server World][2] to install and 
     systemctl enable glusterd
 
 Now that Gluster is installed we can actually get to work.
+
+# Deploy to physical and virtual hardware <a name="obj1"></a>
+
+The first objective is: "Deploy the Red Hat Storage Server appliance on both physical and virtual hardware and work with existing Red Hat Storage Server appliances."
+
+# Configure a Red Hat Storage Server storage pool<a name="obj2"></a>
+
+# Create individual storage bricks<a name="obj3"></a>
+
+Create individual storage bricks on either physical devices or logical volumes
+
+# Create various Red Hat Storage Server volumes<a name="obj4"></a>
+
+Create various Red Hat Storage Server volumes such as:
+* Distributed
+* Replicated
+* Distributed-replicated
+* Stripe-replicated
+* Distributed-striped 
+* Distributed-striped-replicated
+
+### Distributed<a name="obj4-1"></a>
+### Replicated<a name="obj4-2"></a>
+### Distributed-replicated<a name="obj4-3"></a>
+### Stripe-replicated<a name="obj4-4"></a>
+### Distributed-striped<a name="obj4-5"></a>
+### Distributed-striped-replicated<a name="obj4-6"></a>
+
+# Format the volumes with an appropriate file system<a name="obj5"></a>
+
+# Extend existing storage volumes<a name="obj6"></a>
+Extend existing storage volumes by adding additional bricks and performing appropriate rebalancing operations
+
+# Configure clients to use NFS<a name="obj7"></a>
+Configure clients to use Red Hat Storage Server appliance volumes using native and network file systems (NFS)
+
+# Configure clients to use SMB<a name="obj8"></a>
+Configure clients to use Red Hat Storage Server appliance volumes using SMB
+
+# Configure quotas and ACLs<a name="obj9"></a>
+Configure Red Hat Storage Server features including disk quotas and POSIX access control lists (ACLs)
+
+# Configure IP failover for NFS-and SMB-based cluster services<a name="obj10"></a>
+
+# Configure geo-replication services<a name="obj11"></a>
+
+# Configure unified object storage<a name="obj12"></a>
+
+# Troubleshoot Red Hat Storage Server problems<a name="obj13"></a>
+
+# Monitor Red Hat Storage Server workloads<a name="obj14"></a>
+
+# Perform management tasks<a name="obj15"></a>
+Perform Red Hat Storage Server management tasks such as tuning volume options, volume migration, stopping and deleting volumes, and configuring server-side quorum
 
 [1]: http://blog.gluster.org/2014/07/wait-what-no-glusterfs-server-in-centos-7/
 [2]: http://www.server-world.info/en/note?os=CentOS_7&p=glusterfs
