@@ -30,86 +30,86 @@ This is the first in my series of posts for each of the five exams I will take t
 * [Monitor Red Hat Storage Server workloads](#obj14)
 * [Perform management tasks](#obj15)
 
-# Introduction<a name="intro"></a>
+# Introduction <a name="intro">#</a>
 
-Ok, got my coffee, I've cleaned my work area, have my CentOS 7 VM fired up and ready to go; Let's take a look at the objectives. Hmm, CentOS 7 doesn't come with Red Hat Storage Server... great. There is however, a [workaroud][1] suggested by the GlusterFS team themselves: use the community version of glusterfs-server. They provide a link to the main download site for GlusterFS but since I am using CentOS it will be easier to use the repo. It wasn't obvious to me at first but a repo is available for CentOS 7 buried a few levels deep:
+Ok, I've made my coffee, cleaned my work area, have my CentOS 7 VM fired up and ready to go; Let's take a look at the objectives. Hmm, CentOS 7 doesn't come with Red Hat Storage Server... great. There is however, a [solution][1] suggested by the GlusterFS team themselves: use the community version of glusterfs-server. They provide a link to the main download site for GlusterFS but since I am using CentOS it will be easier to use the repo. It wasn't obvious to me at first but there is a repo available for CentOS 7 buried a few levels deep:
 
     http://download.gluster.org/pub/gluster/glusterfs/LATEST/CentOS/glusterfs-epel.repo
 
-Once we have the repo configured we can follow the guide provided by [Server World][2] to install and start the GlusterFS daemon:
+# Deploy to physical and virtual hardware <a name="obj1">#</a>
 
-    [root@gluster-server ~]# yum install glusterfs-server -y
-    [root@gluster-server ~]# systemctl start glusterd
-    [root@gluster-server ~]# systemctl enable glusterd
+The first objective is: "_Deploy the Red Hat Storage Server appliance on both physical and virtual hardware and work with existing Red Hat Storage Server appliances._" 
 
-Now that Gluster is installed we can actually get to work.
+I'm not actually sure what they mean by "deploy." For now I'm going to assume that they mean "install" so I'll describe installing the glusterfs-server and some of it's clients or as the [documentation][3] describes them: "nodes."
 
-# Deploy to physical and virtual hardware <a name="obj1"></a>
+Once we have the repo (as described in the Introduction) configured we can follow the guide provided by [Server World][2] to install and start the GlusterFS daemon:
 
-The first objective is: "Deploy the Red Hat Storage Server appliance on both physical and virtual hardware and work with existing Red Hat Storage Server appliances." I'm not actually sure what they mean by "deploy." For now I'm going to assume that they mean "install" so I'll describe installing the glusterfs-server and some of it's clients or as the [documentation][3] describes them: "nodes."
+    [root@server1 ~]# yum install glusterfs-server -y
+    [root@server1 ~]# systemctl start glusterd
+    [root@server1 ~]# systemctl enable glusterd
 
-In the introduction I described obtaining the GlusterFS repo for CentOS 7 and installing the glusterfs-server so I won't repeat that here and instead move along to installing the software needed to create nodes.
+Then install the software needed to configure a node:
+    [root@node1 ~]# yum install glusterfs glusterfs-fuse -y
 
 
+# Configure a Red Hat Storage Server storage pool <a name="obj2">#</a>
 
-# Configure a Red Hat Storage Server storage pool<a name="obj2"></a>
+# Create individual storage bricks <a name="obj3">#</a>
 
-# Create individual storage bricks<a name="obj3"></a>
+_Create individual storage bricks on either physical devices or logical volumes_
 
-Create individual storage bricks on either physical devices or logical volumes
-
-# Create various Red Hat Storage Server volumes<a name="obj4"></a>
+# Create various Red Hat Storage Server volumes <a name="obj4">#</a>
 The full objective is written as follows:
 
-Create various Red Hat Storage Server volumes such as:
-* Distributed
-* Replicated
-* Distributed-replicated
-* Stripe-replicated
-* Distributed-striped 
-* Distributed-striped-replicated
+_Create various Red Hat Storage Server volumes such as:_
+* _Distributed_
+* _Replicated_
+* _Distributed-replicated_
+* _Stripe-replicated_
+* _Distributed-striped_ 
+* _Distributed-striped-replicated_
 
 I'll break them down into their own individual sections so I can focus more directly on each.
 
-##### Distributed<a name="obj4-1"></a>
+##### Distributed <a name="obj4-1">#</a>
 To create a Distributed volume:
-##### Replicated<a name="obj4-2"></a>
+##### Replicated <a name="obj4-2">#</a>
 To create a Replicated volume:
-##### Distributed-replicated<a name="obj4-3"></a>
+##### Distributed-replicated <a name="obj4-3">#</a>
 To create a Distributed-replicated volume:
-##### Stripe-replicated<a name="obj4-4"></a>
+##### Stripe-replicated <a name="obj4-4">#</a>
 To create a Stripe-replicated volume:
-##### Distributed-striped<a name="obj4-5"></a>
+##### Distributed-striped <a name="obj4-5">#</a>
 To create a Distributed-striped volume:
-##### Distributed-striped-replicated<a name="obj4-6"></a>
+##### Distributed-striped-replicated <a name="obj4-6">#</a>
 To create a Distributed-striped-replicated volume: 
 
-# Format the volumes with an appropriate file system<a name="obj5"></a>
+# Format the volumes with an appropriate file system <a name="obj5">#</a>
 
-# Extend existing storage volumes<a name="obj6"></a>
-Extend existing storage volumes by adding additional bricks and performing appropriate rebalancing operations
+# Extend existing storage volumes <a name="obj6">#</a>
+_Extend existing storage volumes by adding additional bricks and performing appropriate rebalancing operations_
 
-# Configure clients to use NFS<a name="obj7"></a>
-Configure clients to use Red Hat Storage Server appliance volumes using native and network file systems (NFS)
+# Configure clients to use NFS <a name="obj7">#</a>
+_Configure clients to use Red Hat Storage Server appliance volumes using native and network file systems (NFS)_
 
-# Configure clients to use SMB<a name="obj8"></a>
-Configure clients to use Red Hat Storage Server appliance volumes using SMB
+# Configure clients to use SMB <a name="obj8">#</a>
+_Configure clients to use Red Hat Storage Server appliance volumes using SMB_
 
-# Configure quotas and ACLs<a name="obj9"></a>
-Configure Red Hat Storage Server features including disk quotas and POSIX access control lists (ACLs)
+# Configure quotas and ACLs <a name="obj9">#</a>
+_Configure Red Hat Storage Server features including disk quotas and POSIX access control lists (ACLs)_
 
-# Configure IP failover for NFS-and SMB-based cluster services<a name="obj10"></a>
+# Configure IP failover for NFS-and SMB-based cluster services <a name="obj10">#</a>
 
-# Configure geo-replication services<a name="obj11"></a>
+# Configure geo-replication services <a name="obj11">#</a>
 
-# Configure unified object storage<a name="obj12"></a>
+# Configure unified object storage <a name="obj12">#</a>
 
-# Troubleshoot Red Hat Storage Server problems<a name="obj13"></a>
+# Troubleshoot Red Hat Storage Server problems <a name="obj13">#</a>
 
-# Monitor Red Hat Storage Server workloads<a name="obj14"></a>
+# Monitor Red Hat Storage Server workloads <a name="obj14">#</a>
 
-# Perform management tasks<a name="obj15"></a>
-Perform Red Hat Storage Server management tasks such as tuning volume options, volume migration, stopping and deleting volumes, and configuring server-side quorum
+# Perform management tasks <a name="obj15">#</a>
+_Perform Red Hat Storage Server management tasks such as tuning volume options, volume migration, stopping and deleting volumes, and configuring server-side quorum_
 
 [1]: http://blog.gluster.org/2014/07/wait-what-no-glusterfs-server-in-centos-7/
 [2]: http://www.server-world.info/en/note?os=CentOS_7&p=glusterfs
