@@ -5,7 +5,7 @@ date: "2014-04-25 13:24:10 -0500"
 published: false
 ---
 
-This is the first in my series of posts for each of the five exams I will take to earn the RHCA. To kick things off we begin with the EX236 - Hybrid Cloud Storage. This exam is closely related to RH436 - Enterprise Clustering and Storage Management.
+This is the first in my series of posts for each of the five exams I will take to earn the RHCA. I'll begin with the EX236 - Hybrid Cloud Storage. This exam is closely related to RH436 - Enterprise Clustering and Storage Management.
 
 * [Introduction](#intro)
 * [Deploy to physical and virtual hardware](#obj1)
@@ -32,21 +32,25 @@ This is the first in my series of posts for each of the five exams I will take t
 
 # Introduction<a name="intro"></a>
 
-Ok, got my coffee, I've cleaned my work area, have my CentOS 7 VM fired up and ready to go let's take a look at the objectives. Hmm, CentOS 7 doesn't come with Red Hat Storage Server... great. There is however, a [workaroud][1] suggested by the GlusterFS team themselves: use the community version of glusterfs-server. They provide a link to the main download site for GlusterFS but since we are using CentOS you are going to have to dig a little deeper to get to the repo they provide.
+Ok, got my coffee, I've cleaned my work area, have my CentOS 7 VM fired up and ready to go; Let's take a look at the objectives. Hmm, CentOS 7 doesn't come with Red Hat Storage Server... great. There is however, a [workaroud][1] suggested by the GlusterFS team themselves: use the community version of glusterfs-server. They provide a link to the main download site for GlusterFS but since I am using CentOS it will be easier to use the repo. It wasn't obvious to me at first but a repo is available for CentOS 7 buried a few levels deep:
 
     http://download.gluster.org/pub/gluster/glusterfs/LATEST/CentOS/glusterfs-epel.repo
 
-From there we can follow the guide provided by [Server World][2] to install and start the GlusterFS daemon:
+Once we have the repo configured we can follow the guide provided by [Server World][2] to install and start the GlusterFS daemon:
 
-    yum install glusterfs-server -y
-    systemctl start glusterd
-    systemctl enable glusterd
+    [root@gluster-server ~]# yum install glusterfs-server -y
+    [root@gluster-server ~]# systemctl start glusterd
+    [root@gluster-server ~]# systemctl enable glusterd
 
 Now that Gluster is installed we can actually get to work.
 
 # Deploy to physical and virtual hardware <a name="obj1"></a>
 
-The first objective is: "Deploy the Red Hat Storage Server appliance on both physical and virtual hardware and work with existing Red Hat Storage Server appliances."
+The first objective is: "Deploy the Red Hat Storage Server appliance on both physical and virtual hardware and work with existing Red Hat Storage Server appliances." I'm not actually sure what they mean by "deploy." For now I'm going to assume that they mean "install" so I'll describe installing the glusterfs-server and some of it's clients or as the [documentation][3] describes them: "nodes."
+
+In the introduction I described obtaining the GlusterFS repo for CentOS 7 and installing the glusterfs-server so I won't repeat that here and instead move along to installing the software needed to create nodes.
+
+
 
 # Configure a Red Hat Storage Server storage pool<a name="obj2"></a>
 
@@ -55,6 +59,7 @@ The first objective is: "Deploy the Red Hat Storage Server appliance on both phy
 Create individual storage bricks on either physical devices or logical volumes
 
 # Create various Red Hat Storage Server volumes<a name="obj4"></a>
+The full objective is written as follows:
 
 Create various Red Hat Storage Server volumes such as:
 * Distributed
@@ -64,12 +69,20 @@ Create various Red Hat Storage Server volumes such as:
 * Distributed-striped 
 * Distributed-striped-replicated
 
-### Distributed<a name="obj4-1"></a>
-### Replicated<a name="obj4-2"></a>
-### Distributed-replicated<a name="obj4-3"></a>
-### Stripe-replicated<a name="obj4-4"></a>
-### Distributed-striped<a name="obj4-5"></a>
-### Distributed-striped-replicated<a name="obj4-6"></a>
+I'll break them down into their own individual sections so I can focus more directly on each.
+
+##### Distributed<a name="obj4-1"></a>
+To create a Distributed volume:
+##### Replicated<a name="obj4-2"></a>
+To create a Replicated volume:
+##### Distributed-replicated<a name="obj4-3"></a>
+To create a Distributed-replicated volume:
+##### Stripe-replicated<a name="obj4-4"></a>
+To create a Stripe-replicated volume:
+##### Distributed-striped<a name="obj4-5"></a>
+To create a Distributed-striped volume:
+##### Distributed-striped-replicated<a name="obj4-6"></a>
+To create a Distributed-striped-replicated volume: 
 
 # Format the volumes with an appropriate file system<a name="obj5"></a>
 
@@ -100,3 +113,4 @@ Perform Red Hat Storage Server management tasks such as tuning volume options, v
 
 [1]: http://blog.gluster.org/2014/07/wait-what-no-glusterfs-server-in-centos-7/
 [2]: http://www.server-world.info/en/note?os=CentOS_7&p=glusterfs
+[3]: http://www.gluster.org/documentation/Getting_started_common_criteria/
