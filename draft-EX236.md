@@ -37,7 +37,7 @@ Ok, I've made my coffee, cleaned my work area, have my CentOS 7 VM fired up and 
     http://download.gluster.org/pub/gluster/glusterfs/LATEST/CentOS/glusterfs-epel.repo
 
 ###### A quick note on terminology
-A Gluser cluser is a group or "**pool**" of servers or "**nodes**" which are made of many shared filesystems or "**bricks**." A "**client**" is any device which accesses the resources available through the pools. The client may access through SAMBA, NFS, or other network protocol. More details can be found in the [common setup criteria][3].
+A Gluser cluser is a group or "**pool**" of servers or "**nodes**" which are made of several shared filesystems or "**bricks**." A "**client**" is any device which accesses the resources available through the pools. More details can be found in the [common setup criteria][3].
 
 # Deploy to physical and virtual hardware <a name="obj1">#</a>
 
