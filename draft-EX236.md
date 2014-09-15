@@ -36,15 +36,31 @@ Ok, I've made my coffee, cleaned my work area, have my CentOS 7 VM fired up and 
 
 ###### A quick note on terminology
 A Gluser cluser is a group or "**pool**" of servers or "**nodes**" which are made of several shared filesystems or "**bricks**." A "**client**" is any device which accesses the resources available through the pools. More details can be found in the [common setup criteria][3].
+<<<<<<< HEAD
+=======
+
+# Deploy to physical and virtual hardware <a name="obj1">#</a>
+>>>>>>> ae4c3b0a1f25427e5cdf3563c6c4d2d8f54e651a
 
 # Deploy to physical and virtual hardware <a name="obj1">#</a>
 The first objective is: "_Deploy the Red Hat Storage Server appliance on both physical and virtual hardware and work with existing Red Hat Storage Server appliances._" 
 
 I'm not actually sure what they mean by "deploy." For now I'm going to assume that they mean "install" so I'll describe installing the glusterfs-server on a node. 
+<<<<<<< HEAD
 
 There isn't any difference between installing on physical or virtual hardware, the difference will come in how the pools and bricks are configured. The docs on installing to [bare metal][4], for example, details the infastructure: DNS, network fabric, etc.
 
 Once the repo (as described in the Introduction) is configured I can follow the guide provided by [Server World][2] to install and start the GlusterFS daemon. I will repeat this procedure for as many nodes as I want in the pool.
+=======
+
+There isn't any difference between installing on physical or virtual hardware, the difference will come in how the pools and bricks are configured. The docs on installing to [bare metal][4], for example, details the infastructure: DNS, network fabric, etc.
+
+Once the repo (as described in the Introduction) is configured I can follow the guide provided by [Server World][2] to install and start the GlusterFS daemon. I will repeat this procedure for as many nodes as I want in the pool.
+
+    [root@node1 ~]# yum install glusterfs-server -y
+    [root@node1 ~]# systemctl start glusterd
+    [root@node1 ~]# systemctl enable glusterd
+>>>>>>> ae4c3b0a1f25427e5cdf3563c6c4d2d8f54e651a
 
     [root@node1 ~]# yum install glusterfs-server -y
     [root@node1 ~]# systemctl start glusterd
@@ -159,4 +175,8 @@ _Perform Red Hat Storage Server management tasks such as tuning volume options, 
 [1]: http://blog.gluster.org/2014/07/wait-what-no-glusterfs-server-in-centos-7/
 [2]: http://www.server-world.info/en/note?os=CentOS_7&p=glusterfs
 [3]: http://www.gluster.org/documentation/Getting_started_common_criteria/
+<<<<<<< HEAD
 [4]: http://www.gluster.org/community/documentation/index.php/Getting_started_setup_baremetal
+=======
+[4]: http://www.gluster.org/community/documentation/index.php/Getting_started_setup_baremetal
+>>>>>>> ae4c3b0a1f25427e5cdf3563c6c4d2d8f54e651a
