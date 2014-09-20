@@ -1,8 +1,7 @@
 ---
 layout: post
 title: "EX236 - Hybrid Cloud Storage"
-date: "2014-04-25 13:24:10 -0500"
-published: false
+published: true
 ---
 This is the first in my series of posts for each of the five exams I will take to earn the RHCA. I'll begin with the EX236 - Hybrid Cloud Storage. This exam is closely related to RH436 - Enterprise Clustering and Storage Management.
 
@@ -29,16 +28,20 @@ This is the first in my series of posts for each of the five exams I will take t
 * [Monitor Red Hat Storage Server workloads](#obj14)
 * [Perform management tasks](#obj15)
 
-# Introduction <a name="intro">#</a>
-Ok, I've made my coffee, cleaned my work area, have my CentOS 7 VM fired up and ready to go; Let's take a look at the objectives. Hmm, CentOS 7 doesn't come with Red Hat Storage Server... great. There is however, a [solution][1] suggested by the GlusterFS team themselves: use the community version of glusterfs-server. They provide a link to the main download site for GlusterFS but since I am using CentOS it will be easier to use the repo. It wasn't obvious to me at first but there is a repo available for CentOS 7 buried a few levels deep:
+# Introduction <a name="intro"></a>
+
+This exam covers the subject of the Red Hat Storage Server product which is the comercially supported solution that Red Hat offers. If you want to study for this exam without having to purchase a support licence there is a [solution][1] suggested by the GlusterFS team themselves: use the community version of glusterfs-server. 
+
+The Gluster team provide a link to the main download site for GlusterFS but since I am using CentOS it will be easier to use the repo with yum. It wasn't obvious to me at first but there is a repo available for CentOS 7 buried a few levels deep:
 
     http://download.gluster.org/pub/gluster/glusterfs/LATEST/CentOS/glusterfs-epel.repo
 
-####  A quick note on terminology
-A Gluser cluser is a group or "**pool**" of servers or "**nodes**" which are made of several shared filesystems or "**bricks**." A "**client**" is any device which accesses the resources available through the pools. More details can be found in the [common setup criteria][3].
+This document is organized by objective as they are given by Red Hat. It is better to use this as a reference for each objective rather than a walkthrough. For example, the objective to create bricks comes **after** the objective to configure a storage pool. Normally you would create the bricks before adding them to a pool.
 
+###  A quick note on terminology
+A Gluser cluser is a group or "**pool**" of servers or "**nodes**" which are made of several shared filesystems or "**bricks**." A group of bricks make a "**volume**". A "**client**" is any device which accesses the resources available through the pools. More details can be found in the [common setup criteria][3].
 
-# Deploy to physical and virtual hardware <a name="obj1">#</a>
+# Deploy to physical and virtual hardware <a name="obj1"></a>
 The first objective is: "_Deploy the Red Hat Storage Server appliance on both physical and virtual hardware and work with existing Red Hat Storage Server appliances._" 
 
 I'm not actually sure what they mean by "deploy." For now I'm going to assume that they mean "install" so I'll describe installing the glusterfs-server on a node. 
@@ -48,67 +51,68 @@ There isn't any difference between installing on physical or virtual hardware, t
 Once the repo (as described in the Introduction) is configured I can follow the guide provided by [Server World][2] to install and start the GlusterFS daemon. I will repeat this procedure for as many nodes as I want in the pool.
 
     [root@node1 ~]# yum install glusterfs-server -y
-    [root@node1 ~]# systemctl start glusterd
-    [root@node1 ~]# systemctl enable glusterd
+    [root@node1 ~]# systemctl start glusterd.service
+    [root@node1 ~]# systemctl enable glusterd.service
 
-# Configure a Red Hat Storage Server storage pool <a name="obj2">#</a>
+# Configure a Red Hat Storage Server storage pool <a name="obj2"></a>
 I'll use the following configuration to create a pool with three nodes. 
 	
     node1.pequeno.in 162.242.225.89
     node2.pequeno.in 162.242.225.96
     node3.pequeno.in 104.130.28.160
     
-These objectives aren't in sequential order, skip to the next section on creating bricks to find out how to make the bricks to create a pool. Have the nodes learn about each other. Once a node has been added to a pool it can inform other nodes about the ones it already knows about. When node1 probed for node2 we get one kind of success message:
+Here, I tell the nodes to learn about each other. Once a node has been added to a pool it can inform other nodes about the ones it already knows about. When node1 probed for node2 I get one kind of success message:
 
-	[root@node1 ~]# gluster peer probe node2.pequeno.in
-	peer probe: success.
+    [root@node1 ~]# gluster peer probe node2.pequeno.in
+    peer probe: success.
 
-But when we ask node3 to probe node1 we get a different kind of success message:
+But when I ask node3 to probe node1 I get a different kind of success message since node3 already knows about node1.
 	
-	[root@node3 ~]# gluster peer probe node1.pequeno.in
-	peer probe: success. Host node1.pequeno.in port 24007 already in peer list
+    [root@node3 ~]# gluster peer probe node1.pequeno.in
+    peer probe: success. Host node1.pequeno.in port 24007 already in peer list
     
- Then we add the bricks to a single pool
- 
-	 [root@node1 ~]# gluster volume create vol_distributed transport tcp \
-	 node1.pequeno.in:/glusterfs/distributed \
-	 node2.pequeno.in:/glusterfs/distributed \
-	 node3.pequeno.in:/glusterfs/distributed
-	 volume create: vol_distributed: success: please start the volume to access data
+After all the nodes are added to a pool I can add the bricks to the pool.
+
+    [root@node1 ~]# gluster volume create vol_distributed transport tcp \
+    node1.pequeno.in:/glusterfs/distributed \
+    node2.pequeno.in:/glusterfs/distributed \
+    node3.pequeno.in:/glusterfs/distributed
+    volume create: vol_distributed: success: please start the volume to access data
      
-And start the pool
+Start the pool
 
-	[root@node1 ~]# gluster volume start vol_distributed
-	volume start: vol_distributed: success
+    [root@node1 ~]# gluster volume start vol_distributed
+    volume start: vol_distributed: success
 
-GlusterFS is already doing a little work for us in the background. When we created the pool on node1, the other nodes were informed that they were added to a pool. Without making any other changes to node2 we can see the volume status:
+GlusterFS is already doing a little work in the background. When I created the pool on node1, the other nodes were informed that they were added to a pool. Without making any other changes to node2 I can see the volume status:
 
-	[root@node2 ~]# gluster volume info
-	Volume Name: vol_distributed
-	Type: Distribute
-	Volume ID: 72e242ac-6fa8-49a1-a209-e20b80fe90fb
-	Status: Started
-	Number of Bricks: 3
-	Transport-type: tcp
-	Bricks:
-	Brick1: node1.pequeno.in:/glusterfs/distributed
-	Brick2: node2.pequeno.in:/glusterfs/distributed
-	Brick3: node3.pequeno.in:/glusterfs/distributed
+    [root@node2 ~]# gluster volume info
+    Volume Name: vol_distributed
+    Type: Distribute
+    Volume ID: 72e242ac-6fa8-49a1-a209-e20b80fe90fb
+    Status: Started
+    Number of Bricks: 3
+    Transport-type: tcp
+    Bricks:
+    Brick1: node1.pequeno.in:/glusterfs/distributed
+    Brick2: node2.pequeno.in:/glusterfs/distributed
+    Brick3: node3.pequeno.in:/glusterfs/distributed
 
-# Create individual storage bricks <a name="obj3">#</a>
+# Create individual storage bricks <a name="obj3"></a>
 The full objective is: _Create individual storage bricks on either physical devices or logical volumes_. These are nodes with additional blocks of storage added to become the bricks. The added block storage is `/dev/xvdb` on each of the nodes.
 
-	[root@node1 ~]# mkdir /glusterfs
-	[root@node1 ~]# fdisk /dev/xvdb
-	[root@node1 ~]# mkfs -t ext4 /dev/xvdb5
-	[root@node1 ~]# mount /dev/xvdb5 /glusterfs
-	[root@node1 ~]# tail -1 /etc/mtab >> /etc/fstab
-	[root@node1 ~]# mkdir /glusterfs/distributed
+    [root@node1 ~]# mkdir /glusterfs
+    [root@node1 ~]# fdisk /dev/xvdb
+    [root@node1 ~]# mkfs -t xfs /dev/xvdb5
+    [root@node1 ~]# mount /dev/xvdb5 /glusterfs
+    [root@node1 ~]# tail -1 /etc/mtab >> /etc/fstab
+    [root@node1 ~]# mkdir /glusterfs/distributed
 
-# Create various Red Hat Storage Server volumes <a name="obj4">#</a>
+# Create various Red Hat Storage Server volumes <a name="obj4"></a>
 The full objective is written as follows:
 
 _Create various Red Hat Storage Server volumes such as:_
+
 * _Distributed_
 * _Replicated_
 * _Distributed-replicated_
@@ -118,47 +122,76 @@ _Create various Red Hat Storage Server volumes such as:_
 
 I'll break them down into their own individual sections so I can focus more directly on each.
 
-##### Distributed <a name="obj4-1">#</a>
-To create a Distributed volume:
-##### Replicated <a name="obj4-2">#</a>
+### Distributed <a name="obj4-1"></a>
+
+Distributed volumes are created by default when no other options are given. In this example I am creating a volume called `my_distributed_volume`. The only arguments I needed to pass are the name of the volume and the bricks to add to the volume. File distribution and tcp for transport are the default.
+
+    [root@node1 ~]# gluster volume create my_distributed_volume \
+    node1.pequeno.in:/glusterfs/distributed \
+    node2.pequeno.in:/glusterfs/distributed \
+    node3.pequeno.in:/glusterfs/distributed
+    volume create: my_distributed_volume: success: please start the volume to access data 
+
+### Replicated <a name="obj4-2"></a>
+
 To create a Replicated volume:
-##### Distributed-replicated <a name="obj4-3">#</a>
+
+### Distributed-replicated <a name="obj4-3"></a>
+
 To create a Distributed-replicated volume:
-##### Stripe-replicated <a name="obj4-4">#</a>
+
+### Stripe-replicated <a name="obj4-4"></a>
+
 To create a Stripe-replicated volume:
-##### Distributed-striped <a name="obj4-5">#</a>
+
+### Distributed-striped <a name="obj4-5"></a>
+
 To create a Distributed-striped volume:
-##### Distributed-striped-replicated <a name="obj4-6">#</a>
+
+### Distributed-striped-replicated <a name="obj4-6"></a>
+
 To create a Distributed-striped-replicated volume: 
 
-# Format the volumes with an appropriate file system <a name="obj5">#</a>
 
-# Extend existing storage volumes <a name="obj6">#</a>
+# Format the volumes with an appropriate file system <a name="obj5"></a>
+
+Gluster is flexible when it comes to the type of file system you can format a volume with. The Gluster team suggest XFS or ext4 but there aren't very many restrictions from the Gluster side of the fence. 
+
+Red Hat, on the other hand, makes a clear choice: [XFS][5]. 
+
+> Red Hat supports only formatting a Logical Volume by using the XFS file system on the bricks with few modifications to improve performance. Ensure to format bricks using XFS on Logical Volume Manager before adding it to a Red Hat Storage volume. 
+
+From the documentation, you should format the device with the following command:
+
+    # mkfs.ext4 -i size=512 <DEVICE>
+
+# Extend existing storage volumes <a name="obj6"></a>
 _Extend existing storage volumes by adding additional bricks and performing appropriate rebalancing operations_
 
-# Configure clients to use NFS <a name="obj7">#</a>
+# Configure clients to use NFS <a name="obj7"></a>
 _Configure clients to use Red Hat Storage Server appliance volumes using native and network file systems (NFS)_
 
-# Configure clients to use SMB <a name="obj8">#</a>
+# Configure clients to use SMB <a name="obj8"></a>
 _Configure clients to use Red Hat Storage Server appliance volumes using SMB_
 
-# Configure quotas and ACLs <a name="obj9">#</a>
+# Configure quotas and ACLs <a name="obj9"></a>
 _Configure Red Hat Storage Server features including disk quotas and POSIX access control lists (ACLs)_
 
-# Configure IP failover for NFS-and SMB-based cluster services <a name="obj10">#</a>
+# Configure IP failover for NFS-and SMB-based cluster services <a name="obj10"></a>
 
-# Configure geo-replication services <a name="obj11">#</a>
+# Configure geo-replication services <a name="obj11"></a>
 
-# Configure unified object storage <a name="obj12">#</a>
+# Configure unified object storage <a name="obj12"></a>
 
-# Troubleshoot Red Hat Storage Server problems <a name="obj13">#</a>
+# Troubleshoot Red Hat Storage Server problems <a name="obj13"></a>
 
-# Monitor Red Hat Storage Server workloads <a name="obj14">#</a>
+# Monitor Red Hat Storage Server workloads <a name="obj14"></a>
 
-# Perform management tasks <a name="obj15">#</a>
+# Perform management tasks <a name="obj15"></a>
 _Perform Red Hat Storage Server management tasks such as tuning volume options, volume migration, stopping and deleting volumes, and configuring server-side quorum_
 
 [1]: http://blog.gluster.org/2014/07/wait-what-no-glusterfs-server-in-centos-7/
 [2]: http://www.server-world.info/en/note?os=CentOS_7&p=glusterfs
 [3]: http://www.gluster.org/documentation/Getting_started_common_criteria/
 [4]: http://www.gluster.org/community/documentation/index.php/Getting_started_setup_baremetal
+[5]: https://access.redhat.com/documentation/en-US/Red_Hat_Storage/2.0/html/Administration_Guide/chap-User_Guide-Setting_Volumes.html#idp10244912
