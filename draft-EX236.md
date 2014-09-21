@@ -55,25 +55,51 @@ Once the repo (as described in the Introduction) is configured I can follow the 
     [root@node1 ~]# systemctl enable glusterd.service
 
 # Configure a Red Hat Storage Server storage pool <a name="obj2"></a>
-I'll use the following configuration to create a pool with three nodes. 
-	
-    node1.pequeno.in 162.242.225.89
-    node2.pequeno.in 162.242.225.96
-    node3.pequeno.in 104.130.28.160
+
+To create the pool, I'll name each node using a _node#_ pattern, `node1.pequeno.in`, `node2.pequeno.in`, etc. 	
     
-Here, I tell the nodes to learn about each other. Once a node has been added to a pool it can inform other nodes about the ones it already knows about. When node1 probed for node2 I get one kind of success message:
+Here, I tell the nodes to learn about each other. Once a node has been added to a pool it can inform other nodes about the ones it already knows about. When `node1` probed for `node2` I get one kind of success message:
 
     [root@node1 ~]# gluster peer probe node2.pequeno.in
     peer probe: success.
 
-But when I ask node3 to probe node1 I get a different kind of success message since node3 already knows about node1.
+But when I ask `node3` to probe `node1` I get a different kind of success message since `node3` already knows about `node1`.
 	
     [root@node3 ~]# gluster peer probe node1.pequeno.in
     peer probe: success. Host node1.pequeno.in port 24007 already in peer list
     
-After all the nodes are added to a pool I can add the bricks to the pool.
 
-    [root@node1 ~]# gluster volume create vol_distributed transport tcp \
+# Create individual storage bricks <a name="obj3"></a>
+The full objective is: _Create individual storage bricks on either physical devices or logical volumes_. These are nodes with additional blocks of storage added to become the bricks. The added block storage is `/dev/xvdb` on each of the nodes.
+
+    [root@node1 ~]# mkdir /glusterfs
+    [root@node1 ~]# fdisk /dev/xvdb
+    [root@node1 ~]# mkfs -t xfs /dev/xvdb5
+    [root@node1 ~]# mount /dev/xvdb5 /glusterfs
+    [root@node1 ~]# tail -1 /etc/mtab >> /etc/fstab
+    [root@node1 ~]# mkdir /glusterfs/distributed
+
+# Create various Red Hat Storage Server volumes <a name="obj4"></a>
+The full objective is:
+
+_Create various Red Hat Storage Server volumes such as:_
+
+* _Distributed_
+* _Replicated_
+* _Distributed-replicated_
+* _Stripe-replicated_
+* _Distributed-striped_ 
+* _Distributed-striped-replicated_
+
+I'll break them down into their own individual sections so I can focus more directly on each. This section borrows heavily from the "[Setting up GlusterFS Server Volumes][6]" guide provided by the Gluster team. For the examples I'll be using the same FQDNs (`node1.pequeno.in`) for each setup but for each section assume these are newly created pools and bricks.
+
+### Distributed <a name="obj4-1"></a>
+
+![distributed](/../img/ex236/Distributed_Volume.png)
+
+Distributed is the default mode GlusterFS will use if I don't specify any other configuration. In this example I'm only giving name of the volume `vol_distributed`.  
+
+    [root@node1 ~]# gluster volume create vol_distributed \
     node1.pequeno.in:/glusterfs/distributed \
     node2.pequeno.in:/glusterfs/distributed \
     node3.pequeno.in:/glusterfs/distributed
@@ -84,7 +110,7 @@ Start the pool
     [root@node1 ~]# gluster volume start vol_distributed
     volume start: vol_distributed: success
 
-GlusterFS is already doing a little work in the background. When I created the pool on node1, the other nodes were informed that they were added to a pool. Without making any other changes to node2 I can see the volume status:
+Even though we started the volume on `node1`, I can check the status of the volume from any node in the pool. Here, I'm checking the status from `node2`.
 
     [root@node2 ~]# gluster volume info
     Volume Name: vol_distributed
@@ -98,60 +124,156 @@ GlusterFS is already doing a little work in the background. When I created the p
     Brick2: node2.pequeno.in:/glusterfs/distributed
     Brick3: node3.pequeno.in:/glusterfs/distributed
 
-# Create individual storage bricks <a name="obj3"></a>
-The full objective is: _Create individual storage bricks on either physical devices or logical volumes_. These are nodes with additional blocks of storage added to become the bricks. The added block storage is `/dev/xvdb` on each of the nodes.
-
-    [root@node1 ~]# mkdir /glusterfs
-    [root@node1 ~]# fdisk /dev/xvdb
-    [root@node1 ~]# mkfs -t xfs /dev/xvdb5
-    [root@node1 ~]# mount /dev/xvdb5 /glusterfs
-    [root@node1 ~]# tail -1 /etc/mtab >> /etc/fstab
-    [root@node1 ~]# mkdir /glusterfs/distributed
-
-# Create various Red Hat Storage Server volumes <a name="obj4"></a>
-The full objective is written as follows:
-
-_Create various Red Hat Storage Server volumes such as:_
-
-* _Distributed_
-* _Replicated_
-* _Distributed-replicated_
-* _Stripe-replicated_
-* _Distributed-striped_ 
-* _Distributed-striped-replicated_
-
-I'll break them down into their own individual sections so I can focus more directly on each.
-
-### Distributed <a name="obj4-1"></a>
-
-Distributed volumes are created by default when no other options are given. In this example I am creating a volume called `my_distributed_volume`. The only arguments I needed to pass are the name of the volume and the bricks to add to the volume. File distribution and tcp for transport are the default.
-
-    [root@node1 ~]# gluster volume create my_distributed_volume \
-    node1.pequeno.in:/glusterfs/distributed \
-    node2.pequeno.in:/glusterfs/distributed \
-    node3.pequeno.in:/glusterfs/distributed
-    volume create: my_distributed_volume: success: please start the volume to access data 
-
 ### Replicated <a name="obj4-2"></a>
 
-To create a Replicated volume:
+![replicated](/../img/ex236/Replicated_Volume.png)
+
+    [root@node1 ~]# gluster volume create replication1 replica 2 \
+    node1.pequeno.in:/glusterfs/replicated \
+    node2.pequeno.in:/glusterfs/replicated
+    volume create: replication1: success: please start the volume to access data
+
+    [root@node1 ~]# gluster volume start replication1
+    volume start: replication1: success
+
+I can check the status of the volume on `node2`:
+    
+    [root@node2 ~]# gluster volume info
+    
+    Volume Name: replication1
+    Type: Replicate
+    Volume ID: 75182cb0-07c5-4118-86c8-862f2a40d384
+    Status: Started
+    Number of Bricks: 1 x 2 = 2
+    Transport-type: tcp
+    Bricks:
+    Brick1: node1.pequeno.in:/glusterfs/replicated
+    Brick2: node2.pequeno.in:/glusterfs/replicated
 
 ### Distributed-replicated <a name="obj4-3"></a>
 
-To create a Distributed-replicated volume:
+![distributed-replicated](/../img/ex236/Distributed_Replicated_Volume.png)
+
+What is important to note about this configuration is that it is the exact syntax I used for the replicated volume. The difference is that I am providing more bricks (4) than the number of replication volumes (2). 
+
+Gluster will replicate automatically across the first two nodes (`node1` and `node2` each get a copy of `file1`) and then distribute files on the latter nodes (`node3` and `node4` each get a copy of `file2`). 
+
+It is also a better choice to have memebers of a replica set on different servers. While you could, you wouldn't want to have a physical device trying to replicate to itself. If they are on seperate physical volumes they are better protected against disk failure. 
+
+An important note from the documentation:
+
+> Note: The number of bricks should be a multiple of the replica count for a distributed replicated volume.
+
+    [root@node1 ~]# gluster volume create dist-repl replica 2 \
+    node1.pequeno.in:/glusterfs/distributed-replicated/ \
+    node2.pequeno.in:/glusterfs/distributed-replicated/ \
+    node3.pequeno.in:/glusterfs/distributed-replicated/ \
+    node4.pequeno.in:/glusterfs/distributed-replicated/
+    volume create: dist-repl: success: please start the volume to access data
+
+    [root@node4 ~]# gluster volume info
+
+    Volume Name: dist-repl
+    Type: Distributed-Replicate
+    Volume ID: 4a92e432-a1cc-419a-a6a7-7280854619c1
+    Status: Started
+    Number of Bricks: 2 x 2 = 4
+    Transport-type: tcp
+    Bricks:
+    Brick1: node1.pequeno.in:/glusterfs/distributed-replicated
+    Brick2: node2.pequeno.in:/glusterfs/distributed-replicated
+    Brick3: node3.pequeno.in:/glusterfs/distributed-replicated
+    Brick4: node4.pequeno.in:/glusterfs/distributed-replicated
 
 ### Stripe-replicated <a name="obj4-4"></a>
 
-To create a Stripe-replicated volume:
+![striped-replicated](/../img/ex236/Striped_Replicated_Volume.png)
+
+I'm not sure that image is labeled as clearly as it could be. When I send a file to the volume named `strp-repl` it will be distributed across 2 volumes with some of the data going to the first volume containing `node1` and `node2`. The rest of the data going to the second volume containing `node3` and `node4`. To call these replicated volumes is misleading since it's the bricks within the volumes that are replicated.
+
+Data in each volume the data is replicated between the bricks. `node2` will be a duplicate of the data found on `node1`, and `node4` will be a duplicate of the data found on `node3`.
+
+    [root@node1 ~]# gluster volume create strp-repl stripe 2 replica 2 \
+    node1.pequeno.in:/glusterfs/striped-replicated/ \
+    node2.pequeno.in:/glusterfs/striped-replicated/ \
+    node3.pequeno.in:/glusterfs/striped-replicated/ \
+    node4.pequeno.in:/glusterfs/striped-replicated/
+    volume create: strp-repl: success: please start the volume to access data
+
+
+
+    [root@node3 ~]# gluster volume info
+    
+    Volume Name: strp-repl
+    Type: Striped-Replicate
+    Volume ID: c002f35f-68ff-45de-9021-a4e77d68842f
+    Status: Started
+    Number of Bricks: 1 x 2 x 2 = 4
+    Transport-type: tcp
+    Bricks:
+    Brick1: node1.pequeno.in:/glusterfs/striped-replicated
+    Brick2: node2.pequeno.in:/glusterfs/striped-replicated
+    Brick3: node3.pequeno.in:/glusterfs/striped-replicated
+    Brick4: node4.pequeno.in:/glusterfs/striped-replicated
 
 ### Distributed-striped <a name="obj4-5"></a>
 
-To create a Distributed-striped volume:
+![distributed-striped](/../img/ex236/Distributed_Striped_Volume.png)
+
+This example shows again how distribution is often implied. Here I'm asking GlusterFS to stripe across 2 but I'm giving it 4 bricks. GlusterFS will stripe `file1` across `node1` and `node2`, and `file2` will be striped across `node3` and `node4`.
+
+    [root@node1 ~]# gluster volume create dist-strp stripe 2 \
+    node1.pequeno.in:/glusterfs/distributed-striped/ \
+    node2.pequeno.in:/glusterfs/distributed-striped/ \
+    node3.pequeno.in:/glusterfs/distributed-striped/ \
+    node4.pequeno.in:/glusterfs/distributed-striped/
+    volume create: dist-strp: success: please start the volume to access data
+
+    [root@node2 ~]# gluster volume info
+    Volume Name: dist-strp
+    Type: Distributed-Stripe
+    Volume ID: 5ba0b6fb-8107-473c-88d6-40f75595b2c9
+    Status: Started
+    Number of Bricks: 2 x 2 = 4
+    Transport-type: tcp
+    Bricks:
+    Brick1: node1.pequeno.in:/glusterfs/distributed-striped
+    Brick2: node2.pequeno.in:/glusterfs/distributed-striped
+    Brick3: node3.pequeno.in:/glusterfs/distributed-striped
+    Brick4: node4.pequeno.in:/glusterfs/distributed-striped
 
 ### Distributed-striped-replicated <a name="obj4-6"></a>
 
-To create a Distributed-striped-replicated volume: 
+![distributed-striped-replicated](/../img/ex236/Distributed_Striped_Replicated_Volume.png)
 
+    [root@node1 ~]# gluster volume create dist-strp-repl stripe 2 replica 2 \
+    node1.pequeno.in:/glusterfs/dist-strp-repl/ \
+    node2.pequeno.in:/glusterfs/dist-strp-repl/ \
+    node3.pequeno.in:/glusterfs/dist-strp-repl/ \
+    node4.pequeno.in:/glusterfs/dist-strp-repl/ \
+    node5.pequeno.in:/glusterfs/dist-strp-repl/ \
+    node6.pequeno.in:/glusterfs/dist-strp-repl/ \
+    node7.pequeno.in:/glusterfs/dist-strp-repl/ \
+    node8.pequeno.in:/glusterfs/dist-strp-repl/
+    volume create: dist-strp-repl: success: please start the volume to access data
+
+    [root@node2 ~]# gluster volume info    
+    
+    Volume Name: dist-strp-repl
+    Type: Distributed-Striped-Replicate
+    Volume ID: 2b93ca88-8dc9-401b-bc16-4041b9a733b5
+    Status: Started
+    Number of Bricks: 2 x 2 x 2 = 8
+    Transport-type: tcp
+    Bricks:
+    Brick1: node1.pequeno.in:/glusterfs/dist-strp-repl
+    Brick2: node2.pequeno.in:/glusterfs/dist-strp-repl
+    Brick3: node3.pequeno.in:/glusterfs/dist-strp-repl
+    Brick4: node4.pequeno.in:/glusterfs/dist-strp-repl
+    Brick5: node5.pequeno.in:/glusterfs/dist-strp-repl
+    Brick6: node6.pequeno.in:/glusterfs/dist-strp-repl
+    Brick7: node7.pequeno.in:/glusterfs/dist-strp-repl
+    Brick8: node8.pequeno.in:/glusterfs/dist-strp-repl
 
 # Format the volumes with an appropriate file system <a name="obj5"></a>
 
@@ -183,6 +305,9 @@ _Configure Red Hat Storage Server features including disk quotas and POSIX acces
 
 # Configure unified object storage <a name="obj12"></a>
 
+http://blog.gluster.org/2012/09/howto-using-ufo-swift-a-quick-and-dirty-setup-guide/
+
+
 # Troubleshoot Red Hat Storage Server problems <a name="obj13"></a>
 
 # Monitor Red Hat Storage Server workloads <a name="obj14"></a>
@@ -195,3 +320,4 @@ _Perform Red Hat Storage Server management tasks such as tuning volume options, 
 [3]: http://www.gluster.org/documentation/Getting_started_common_criteria/
 [4]: http://www.gluster.org/community/documentation/index.php/Getting_started_setup_baremetal
 [5]: https://access.redhat.com/documentation/en-US/Red_Hat_Storage/2.0/html/Administration_Guide/chap-User_Guide-Setting_Volumes.html#idp10244912
+[6]: https://github.com/gluster/glusterfs/blob/master/doc/admin-guide/en-US/markdown/admin_setting_volumes.md
