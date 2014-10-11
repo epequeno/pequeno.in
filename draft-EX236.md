@@ -290,6 +290,20 @@ From the documentation, you should format the device with the following command:
 # Extend existing storage volumes <a name="obj6"></a>
 _Extend existing storage volumes by adding additional bricks and performing appropriate rebalancing operations_
 
+The objectives for this exam don't specify that we should know how to configure a strictly striped volume but I believe that is a useful configuration to test a rebalancing operation.
+
+I'll be using a new `node1` and `node2` for this example. 
+
+    [root@gluster ~]# gluster peer probe node2.pequeno.in
+    peer probe: success. 
+    [root@gluster ~]# gluster peer status
+    Number of Peers: 1
+
+    Hostname: node2.pequeno.in
+    Uuid: 4ce512c2-00d2-4a36-8651-7885588e495a
+    State: Peer in Cluster (Connected)
+
+
 # Configure clients to use NFS <a name="obj7"></a>
 _Configure clients to use Red Hat Storage Server appliance volumes using native and network file systems (NFS)_
 
