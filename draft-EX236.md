@@ -100,9 +100,9 @@ I'll break them down into their own individual sections so I can focus more dire
 Distributed is the default mode GlusterFS will use if I don't specify any other configuration. In this example I'm only giving name of the volume `vol_distributed`.  
 
     [root@node1 ~]# gluster volume create vol_distributed \
-    node1.pequeno.in:/glusterfs/distributed \
-    node2.pequeno.in:/glusterfs/distributed \
-    node3.pequeno.in:/glusterfs/distributed
+    >node1.pequeno.in:/glusterfs/distributed \
+    >node2.pequeno.in:/glusterfs/distributed \
+    >node3.pequeno.in:/glusterfs/distributed;
     volume create: vol_distributed: success: please start the volume to access data
      
 Start the pool
@@ -165,10 +165,10 @@ An important note from the documentation:
 > Note: The number of bricks should be a multiple of the replica count for a distributed replicated volume.
 
     [root@node1 ~]# gluster volume create dist-repl replica 2 \
-    node1.pequeno.in:/glusterfs/distributed-replicated/ \
-    node2.pequeno.in:/glusterfs/distributed-replicated/ \
-    node3.pequeno.in:/glusterfs/distributed-replicated/ \
-    node4.pequeno.in:/glusterfs/distributed-replicated/
+    >node1.pequeno.in:/glusterfs/distributed-replicated/ \
+    >node2.pequeno.in:/glusterfs/distributed-replicated/ \
+    >node3.pequeno.in:/glusterfs/distributed-replicated/ \
+    >node4.pequeno.in:/glusterfs/distributed-replicated/;
     volume create: dist-repl: success: please start the volume to access data
 
     [root@node4 ~]# gluster volume info
@@ -194,10 +194,10 @@ I'm not sure that image is labeled as clearly as it could be. When I send a file
 Data in each volume the data is replicated between the bricks. `node2` will be a duplicate of the data found on `node1`, and `node4` will be a duplicate of the data found on `node3`.
 
     [root@node1 ~]# gluster volume create strp-repl stripe 2 replica 2 \
-    node1.pequeno.in:/glusterfs/striped-replicated/ \
-    node2.pequeno.in:/glusterfs/striped-replicated/ \
-    node3.pequeno.in:/glusterfs/striped-replicated/ \
-    node4.pequeno.in:/glusterfs/striped-replicated/
+    >node1.pequeno.in:/glusterfs/striped-replicated/ \
+    >node2.pequeno.in:/glusterfs/striped-replicated/ \
+    >node3.pequeno.in:/glusterfs/striped-replicated/ \
+    >node4.pequeno.in:/glusterfs/striped-replicated/;
     volume create: strp-repl: success: please start the volume to access data
 
 
@@ -223,10 +223,10 @@ Data in each volume the data is replicated between the bricks. `node2` will be a
 This example shows again how distribution is often implied. Here I'm asking GlusterFS to stripe across 2 but I'm giving it 4 bricks. GlusterFS will stripe `file1` across `node1` and `node2`, and `file2` will be striped across `node3` and `node4`.
 
     [root@node1 ~]# gluster volume create dist-strp stripe 2 \
-    node1.pequeno.in:/glusterfs/distributed-striped/ \
-    node2.pequeno.in:/glusterfs/distributed-striped/ \
-    node3.pequeno.in:/glusterfs/distributed-striped/ \
-    node4.pequeno.in:/glusterfs/distributed-striped/
+    >node1.pequeno.in:/glusterfs/distributed-striped/ \
+    >node2.pequeno.in:/glusterfs/distributed-striped/ \
+    >node3.pequeno.in:/glusterfs/distributed-striped/ \
+    >node4.pequeno.in:/glusterfs/distributed-striped/;
     volume create: dist-strp: success: please start the volume to access data
 
     [root@node2 ~]# gluster volume info
@@ -247,14 +247,14 @@ This example shows again how distribution is often implied. Here I'm asking Glus
 ![distributed-striped-replicated](/../img/ex236/Distributed_Striped_Replicated_Volume.png)
 
     [root@node1 ~]# gluster volume create dist-strp-repl stripe 2 replica 2 \
-    node1.pequeno.in:/glusterfs/dist-strp-repl/ \
-    node2.pequeno.in:/glusterfs/dist-strp-repl/ \
-    node3.pequeno.in:/glusterfs/dist-strp-repl/ \
-    node4.pequeno.in:/glusterfs/dist-strp-repl/ \
-    node5.pequeno.in:/glusterfs/dist-strp-repl/ \
-    node6.pequeno.in:/glusterfs/dist-strp-repl/ \
-    node7.pequeno.in:/glusterfs/dist-strp-repl/ \
-    node8.pequeno.in:/glusterfs/dist-strp-repl/
+    >node1.pequeno.in:/glusterfs/dist-strp-repl/ \
+    >node2.pequeno.in:/glusterfs/dist-strp-repl/ \
+    >node3.pequeno.in:/glusterfs/dist-strp-repl/ \
+    >node4.pequeno.in:/glusterfs/dist-strp-repl/ \
+    >node5.pequeno.in:/glusterfs/dist-strp-repl/ \
+    >node6.pequeno.in:/glusterfs/dist-strp-repl/ \
+    >node7.pequeno.in:/glusterfs/dist-strp-repl/ \
+    >node8.pequeno.in:/glusterfs/dist-strp-repl/;
     volume create: dist-strp-repl: success: please start the volume to access data
 
     [root@node2 ~]# gluster volume info    
@@ -285,7 +285,7 @@ Red Hat, on the other hand, makes a clear choice: [XFS][5].
 
 From the documentation, you should format the device with the following command:
 
-    # mkfs.ext4 -i size=512 <DEVICE>
+    # mkfs.xfs -i size=512 <DEVICE>
 
 # Extend existing storage volumes <a name="obj6"></a>
 _Extend existing storage volumes by adding additional bricks and performing appropriate rebalancing operations_
@@ -294,14 +294,60 @@ The objectives for this exam don't specify that we should know how to configure 
 
 I'll be using a new `node1` and `node2` for this example. 
 
-    [root@gluster ~]# gluster peer probe node2.pequeno.in
+    [root@node1 ~]# gluster peer probe node2.pequeno.in
     peer probe: success. 
-    [root@gluster ~]# gluster peer status
+    [root@node1 ~]# gluster peer status
     Number of Peers: 1
 
     Hostname: node2.pequeno.in
     Uuid: 4ce512c2-00d2-4a36-8651-7885588e495a
     State: Peer in Cluster (Connected)
+
+Now I'll create a brick on each of the nodes, I'm only showing the commands entered for `node1`, the exact commands are to be duplicated on `node2`.
+
+    [root@node1 ~]# fdisk /dev/xvdb
+    [root@node1 ~]# mkfs.xfs -i size=512 /dev/xvdb5
+    [root@node1 ~]# mkdir /glusterfs
+    [root@node1 ~]# mount /dev/xvdb5 /glusterfs/
+    [root@node1 ~]# mkdir /glusterfs/striped
+
+I can now create the striped volume `strp-vol`
+
+    [root@node1 ~]# gluster volume create strp-vol stripe 2 \
+    > node1.pequeno.in:/glusterfs/striped \
+    > node2.pequeno.in:/glusterfs/striped;
+    volume create: strp-vol: success: please start the volume to access data
+    [root@node1 ~]# gluster volume start strp-vol
+    volume start: strp-vol: success
+
+    [root@gluster ~]# gluster volume info
+     
+    Volume Name: strp-vol
+    Type: Stripe
+    Volume ID: 5b54ba8c-706c-48fa-bdf3-befd19095916
+    Status: Started
+    Number of Bricks: 1 x 2 = 2
+    Transport-type: tcp
+    Bricks:
+    Brick1: node1.pequeno.in:/glusterfs/striped
+    Brick2: node2.pequeno.in:/glusterfs/striped
+
+I'll have a client use this volume. To configure a client using the native gluster application the fuse module must be available in the kernel. 
+
+   [root@client ~]# modprobe fuse
+   [root@client ~]# dmesg | grep -i fuse
+   [ 1190.323234] fuse init (API version 7.22)
+   [ 1190.348663] SELinux: initialized (dev fusectl, type fusectl), uses genfs_contexts
+   [root@client ~]# yum -y install openssh-server wget fuse fuse-libs openib libibverbs
+   [root@client ~]# cd /etc/yum.repos.d/
+   [root@client yum.repos.d]# 
+   [root@client yum.repos.d]# wget http://download.gluster.org/pub/gluster/glusterfs/LATEST/CentOS/glusterfs-epel.repo
+   [root@client ~]# yum install glusterfs-core glusterfs-fuse glusterfs-rdma
+
+
+
+
+
 
 
 # Configure clients to use NFS <a name="obj7"></a>
