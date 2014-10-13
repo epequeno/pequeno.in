@@ -332,21 +332,14 @@ I can now create the striped volume `strp-vol`
     Brick1: node1.pequeno.in:/glusterfs/striped
     Brick2: node2.pequeno.in:/glusterfs/striped
 
-I'll have a client use this volume. To configure a client using the native gluster application the fuse module must be available in the kernel. 
+I'll have a client use this volume. The gluster docs on installing the native client don't seem to be up to date. They ask to [install][7] the openib package but that is no longer included in RHEL. It seems as though that package has been replaced but is not needed unless you are planning to use [infiniband][8].
 
-   [root@client ~]# modprobe fuse
-   [root@client ~]# dmesg | grep -i fuse
-   [ 1190.323234] fuse init (API version 7.22)
-   [ 1190.348663] SELinux: initialized (dev fusectl, type fusectl), uses genfs_contexts
-   [root@client ~]# yum -y install openssh-server wget fuse fuse-libs openib libibverbs
-   [root@client ~]# cd /etc/yum.repos.d/
-   [root@client yum.repos.d]# 
-   [root@client yum.repos.d]# wget http://download.gluster.org/pub/gluster/glusterfs/LATEST/CentOS/glusterfs-epel.repo
-   [root@client ~]# yum install glusterfs-core glusterfs-fuse glusterfs-rdma
+From there, I can install the necessary packages for the client. The gluster docs say to install several packages for the native client but I didn't have much luck that way. I did have success using the instructions from [this][11] guide from server-world.
 
-
-
-
+    [root@client ~]# wget http://download.gluster.org/pub/gluster/glusterfs/LATEST/CentOS/glusterfs-epel.repo -O /etc/yum.repos.d/glusterfs-epel.repo 
+    [root@client ~]# yum -y install glusterfs glusterfs-fuse
+    [root@client ~]# mkdir gluster
+    [root@client ~]# mount -t glusterfs node1.pequeno.in:/strp-vol gluster/
 
 
 
@@ -370,6 +363,25 @@ http://blog.gluster.org/2012/09/howto-using-ufo-swift-a-quick-and-dirty-setup-gu
 
 # Troubleshoot Red Hat Storage Server problems <a name="obj13"></a>
 
+During the installation of the client I came across this:
+
+    [root@client ~]# mount -t glusterfs node1.pequeno.in:/glusterfs/strp-vol gluster/
+    Mount failed. Please check the log file for more details.
+
+The relevant lines from the logs read:
+
+    [2014-10-13 22:41:14.567433] E [glusterfsd-mgmt.c:1297:mgmt_getspec_cbk] 0-glusterfs: failed to get the 'volume file' from server
+    [2014-10-13 22:41:14.567480] E [glusterfsd-mgmt.c:1398:mgmt_getspec_cbk] 0-mgmt: failed to fetch volume file (key:/glusterfs/strp-vol)
+
+A quick google search came up with [this][9] mailing list thread which solves the issue with changing some security settings. Making those changes did not solve the issue for me but [this][10] blog post pointed out that the problem was much more simple. As it turns out, I was attempting to mount using the path when I really just needed to pass the name of the volume:
+
+    [root@client ~]# mount -t glusterfs node1.pequeno.in:/strp-vol gluster/
+
+
+
+  
+
+
 # Monitor Red Hat Storage Server workloads <a name="obj14"></a>
 
 # Perform management tasks <a name="obj15"></a>
@@ -381,3 +393,7 @@ _Perform Red Hat Storage Server management tasks such as tuning volume options, 
 [4]: http://www.gluster.org/community/documentation/index.php/Getting_started_setup_baremetal
 [5]: https://access.redhat.com/documentation/en-US/Red_Hat_Storage/2.0/html/Administration_Guide/chap-User_Guide-Setting_Volumes.html#idp10244912
 [6]: https://github.com/gluster/glusterfs/blob/master/doc/admin-guide/en-US/markdown/admin_setting_volumes.md
+[7]: http://gluster.org/community/documentation/index.php/Gluster_3.2:_Installing_Red_Hat_Package_Manager_%28RPM%29_Distributions
+[8]: https://github.com/beloglazov/openstack-centos-kvm-glusterfs/issues/13
+[9]: https://lists.gnu.org/archive/html/gluster-devel/2012-12/msg00031.html
+[10]: http://www.amitnepal.com/gluster-filesystem-troubleshooting/
