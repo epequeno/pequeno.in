@@ -406,8 +406,8 @@ Now, we can rebalance:
     node2.pequeno.in     0              0Bytes        103             0             3            completed               1.00
 
 
-
-
+look @ http://gluster.org/community/documentation/index.php/Gluster_3.2:_Rebalancing_Volume_to_Fix_Layout_Changes
+and http://www.slashroot.in/gfs-gluster-file-system-complete-tutorial-guide-for-an-administrator
 
 
 
@@ -417,12 +417,20 @@ _Configure clients to use Red Hat Storage Server appliance volumes using native 
 # Configure clients to use SMB <a name="obj8"></a>
 _Configure clients to use Red Hat Storage Server appliance volumes using SMB_
 
+
+
 # Configure quotas and ACLs <a name="obj9"></a>
 _Configure Red Hat Storage Server features including disk quotas and POSIX access control lists (ACLs)_
 
+http://gluster.org/community/documentation/index.php/Gluster_3.2:_Enabling_Quota
+
 # Configure IP failover for NFS-and SMB-based cluster services <a name="obj10"></a>
 
+https://access.redhat.com/documentation/en-US/Red_Hat_Storage/2.0/html/Administration_Guide/ch09s04.html
+
 # Configure geo-replication services <a name="obj11"></a>
+
+https://github.com/gluster/glusterfs/blob/master/doc/admin-guide/en-US/markdown/admin_distributed_geo_rep.md
 
 # Configure unified object storage <a name="obj12"></a>
 
