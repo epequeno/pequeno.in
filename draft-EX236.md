@@ -400,10 +400,10 @@ Now, we can rebalance:
     volume rebalance: strp-vol: success: Starting rebalance on volume strp-vol has been successful.
     ID: 2a86a8bd-c4f0-42bb-b76e-d4aa1be64ea0
     [root@node1 ~]# gluster volume rebalance strp-vol status
-                                        Node Rebalanced-files          size       scanned      failures       skipped               status   run time in secs
-                                                                       ---------      -----------   -----------   -----------   -----------   -----------         ------------     --------------
-                                                                                                      localhost               33        33.0MB           133             0            18            completed              10.00
-                                                                                                                              node2.pequeno.in                0        0Bytes           103             0             3            completed               1.00
+    Node              Rebalanced-files  size          scanned      failures       skipped        status          run time in secs
+    ---------         -----------       -----------   -----------  -----------   -----------    ------------     --------------
+    localhost            33             33.0MB        133             0            18            completed              10.00
+    node2.pequeno.in     0              0Bytes        103             0             3            completed               1.00
 
 
 
