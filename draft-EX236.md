@@ -340,6 +340,7 @@ The gluster docs say to install several packages for the native client but I did
     [root@client ~]# yum -y install glusterfs glusterfs-fuse
     [root@client ~]# mkdir gluster
     [root@client ~]# mount -t glusterfs node1.pequeno.in:/strp-vol gluster/
+    [root@client gluster]# df -h
     Filesystem                  Size  Used Avail Use% Mounted on
     /dev/xvda1                   20G  1.4G   18G   8% /
     devtmpfs                    238M     0  238M   0% /dev
@@ -348,13 +349,9 @@ The gluster docs say to install several packages for the native client but I did
     tmpfs                       243M     0  243M   0% /sys/fs/cgroup
     node1.pequeno.in:/strp-vol  200G   65M  200G   1% /root/gluster
 
+I'll create a bunch of dummy files:
 
-Now that the client is connected I'll add another 100GB of cloud block storage to `node1` to create a new brick. I'll create a 10G dummy file. Note that since this is a networked file system the operation took 2161s (~36m) to complete.
-
-    [root@client gluster]# dd if=/dev/urandom of=bigfile bs=1M count=10000
-    10000+0 records in
-    10000+0 records out
-    10485760000 bytes (10 GB) copied, 2161.18 s, 4.9 MB/s
+    [root@client gluster]# for i in {1..100}; do dd if=/dev/urandom of=$i bs=1M count=1;done
 
 Finally, I can get to the heart of the issue: adding a brick and rebalancing. An important thing to note from [this][12] guide:
 
@@ -365,43 +362,6 @@ If I attempt to use just 1 brick, I'll get the following error:
     [root@node1 ~]# gluster volume add-brick strp-vol node1.pequeno.in:/newbrick/
     volume add-brick: failed: Incorrect number of bricks supplied 1 with count 2
 
-So, I'll do the following on both `node1` and `node2`:
-
-    [root@node1 ~]# fdisk /dev/xvdd
-    [root@node1 ~]# mkfs.xfs -i size=512 /dev/xvdd5
-    [root@node1 ~]# mkdir /newbrick
-    [root@node1 ~]# mount /dev/xvdd5 /newbrick/
-    [root@node1 ~]# mkdir /newbrick/vol
-
-And add both this way:
-    [root@node1 ~]# gluster volume add-brick strp-vol node1.pequeno.in:/newbrick/vol node2.pequeno.in:/newbrick/vol
-    volume add-brick: success
-    [root@node1 ~]# gluster volume info
-     
-     Volume Name: strp-vol
-     Type: Distributed-Stripe
-     Volume ID: b6c1a1f5-a52f-44c5-a289-ec18e16006af
-     Status: Started
-     Number of Bricks: 2 x 2 = 4
-     Transport-type: tcp
-     Bricks:
-     Brick1: node1.pequeno.in:/glusterfs/striped
-     Brick2: node2.pequeno.in:/glusterfs/striped
-     Brick3: node1.pequeno.in:/newbrick/vol
-     Brick4: node2.pequeno.in:/newbrick/vol
-
-Notice how the Type has now been changed to `Distributed-Stripe`. Now we can actually do the rebalancing:
-
-    [root@node1 ~]# gluster volume rebalance strp-vol start
-    volume rebalance: strp-vol: success: Starting rebalance on volume strp-vol has been successful.
-    ID: 398a602f-a8c1-4442-a1e4-bc4a3314f42c
-
-
-    [root@client gluster]# for in in {1..100}; do dd if=/dev/urandom of=$i.txt bs=1M count=1;done;
-
-
-    
-    
 
 
 # Configure clients to use NFS <a name="obj7"></a>
