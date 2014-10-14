@@ -362,6 +362,53 @@ If I attempt to use just 1 brick, I'll get the following error:
     [root@node1 ~]# gluster volume add-brick strp-vol node1.pequeno.in:/newbrick/
     volume add-brick: failed: Incorrect number of bricks supplied 1 with count 2
 
+So I'll create new bricks on `node2` like this:
+
+    [root@node2 ~]# fdisk /dev/xvdd
+    [root@node2 ~]# mkfs.xfs -i size=512 /dev/xvdd5 
+    [root@node2 ~]# mkdir /newbrick
+    [root@node2 ~]# mount /dev/xvdd5 /to-be-added/
+    [root@node2 ~]# cd /to-be-added/
+    [root@node2 to-be-added]# mkdir brick1
+    [root@node2 to-be-added]# mkdir brick2
+
+Now on `node1` I will add the 2 new bricks to the volume:
+
+    [root@node1 ~]# gluster volume add-brick strp-vol \
+    > node2.pequeno.in:/to-be-added/brick1 \
+    > node2.pequeno.in:/to-be-added/brick2;
+
+This changes the type of the volume to `Distributed-Stripe`:
+
+    [root@node1 ~]# gluster volume info
+     
+    Volume Name: strp-vol
+    Type: Distributed-Stripe
+    Volume ID: 79ecfcbf-c1d0-4d7a-94e1-78f670a12e0d
+    Status: Started
+    Number of Bricks: 2 x 2 = 4
+    Transport-type: tcp
+    Bricks:
+    Brick1: node1.pequeno.in:/glusterfs/striped
+    Brick2: node2.pequeno.in:/glusterfs/striped
+    Brick3: node2.pequeno.in:/to-be-added/brick1
+    Brick4: node2.pequeno.in:/to-be-added/brick2
+
+Now, we can rebalance:
+
+    [root@node1 ~]# gluster volume rebalance strp-vol start
+    volume rebalance: strp-vol: success: Starting rebalance on volume strp-vol has been successful.
+    ID: 2a86a8bd-c4f0-42bb-b76e-d4aa1be64ea0
+    [root@node1 ~]# gluster volume rebalance strp-vol status
+                                        Node Rebalanced-files          size       scanned      failures       skipped               status   run time in secs
+                                                                       ---------      -----------   -----------   -----------   -----------   -----------         ------------     --------------
+                                                                                                      localhost               33        33.0MB           133             0            18            completed              10.00
+                                                                                                                              node2.pequeno.in                0        0Bytes           103             0             3            completed               1.00
+
+
+
+
+
 
 
 # Configure clients to use NFS <a name="obj7"></a>
