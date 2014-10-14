@@ -332,15 +332,76 @@ I can now create the striped volume `strp-vol`
     Brick1: node1.pequeno.in:/glusterfs/striped
     Brick2: node2.pequeno.in:/glusterfs/striped
 
-I'll have a client use this volume. The gluster docs on installing the native client don't seem to be up to date. They ask to [install][7] the openib package but that is no longer included in RHEL. It seems as though that package has been replaced but is not needed unless you are planning to use [infiniband][8].
+I'll have a client use this volume. The gluster docs on installing the native client don't seem to be up to date. They ask to [install][7] the `openib` package but that is no longer included in RHEL. It seems as though that package has been replaced but is not needed unless you are planning to use [infiniband][8].
 
-From there, I can install the necessary packages for the client. The gluster docs say to install several packages for the native client but I didn't have much luck that way. I did have success using the instructions from [this][11] guide from server-world.
+The gluster docs say to install several packages for the native client but I didn't have much luck that way. I did have success using the instructions from [this][11] guide from server-world.
 
     [root@client ~]# wget http://download.gluster.org/pub/gluster/glusterfs/LATEST/CentOS/glusterfs-epel.repo -O /etc/yum.repos.d/glusterfs-epel.repo 
     [root@client ~]# yum -y install glusterfs glusterfs-fuse
     [root@client ~]# mkdir gluster
     [root@client ~]# mount -t glusterfs node1.pequeno.in:/strp-vol gluster/
+    Filesystem                  Size  Used Avail Use% Mounted on
+    /dev/xvda1                   20G  1.4G   18G   8% /
+    devtmpfs                    238M     0  238M   0% /dev
+    tmpfs                       243M     0  243M   0% /dev/shm
+    tmpfs                       243M  4.3M  239M   2% /run
+    tmpfs                       243M     0  243M   0% /sys/fs/cgroup
+    node1.pequeno.in:/strp-vol  200G   65M  200G   1% /root/gluster
 
+
+Now that the client is connected I'll add another 100GB of cloud block storage to `node1` to create a new brick. I'll create a 10G dummy file. Note that since this is a networked file system the operation took 2161s (~36m) to complete.
+
+    [root@client gluster]# dd if=/dev/urandom of=bigfile bs=1M count=10000
+    10000+0 records in
+    10000+0 records out
+    10485760000 bytes (10 GB) copied, 2161.18 s, 4.9 MB/s
+
+Finally, I can get to the heart of the issue: adding a brick and rebalancing. An important thing to note from [this][12] guide:
+
+> Note: When expanding distributed replicated and distributed striped volumes, you need to add a number of bricks that is a multiple of the replica or stripe count. For example, to expand a distributed replicated volume with a replica count of 2, you need to add bricks in multiples of 2 (such as 4, 6, 8, etc.). 
+
+If I attempt to use just 1 brick, I'll get the following error:
+
+    [root@node1 ~]# gluster volume add-brick strp-vol node1.pequeno.in:/newbrick/
+    volume add-brick: failed: Incorrect number of bricks supplied 1 with count 2
+
+So, I'll do the following on both `node1` and `node2`:
+
+    [root@node1 ~]# fdisk /dev/xvdd
+    [root@node1 ~]# mkfs.xfs -i size=512 /dev/xvdd5
+    [root@node1 ~]# mkdir /newbrick
+    [root@node1 ~]# mount /dev/xvdd5 /newbrick/
+    [root@node1 ~]# mkdir /newbrick/vol
+
+And add both this way:
+    [root@node1 ~]# gluster volume add-brick strp-vol node1.pequeno.in:/newbrick/vol node2.pequeno.in:/newbrick/vol
+    volume add-brick: success
+    [root@node1 ~]# gluster volume info
+     
+     Volume Name: strp-vol
+     Type: Distributed-Stripe
+     Volume ID: b6c1a1f5-a52f-44c5-a289-ec18e16006af
+     Status: Started
+     Number of Bricks: 2 x 2 = 4
+     Transport-type: tcp
+     Bricks:
+     Brick1: node1.pequeno.in:/glusterfs/striped
+     Brick2: node2.pequeno.in:/glusterfs/striped
+     Brick3: node1.pequeno.in:/newbrick/vol
+     Brick4: node2.pequeno.in:/newbrick/vol
+
+Notice how the Type has now been changed to `Distributed-Stripe`. Now we can actually do the rebalancing:
+
+    [root@node1 ~]# gluster volume rebalance strp-vol start
+    volume rebalance: strp-vol: success: Starting rebalance on volume strp-vol has been successful.
+    ID: 398a602f-a8c1-4442-a1e4-bc4a3314f42c
+
+
+    [root@client gluster]# for in in {1..100}; do dd if=/dev/urandom of=$i.txt bs=1M count=1;done;
+
+
+    
+    
 
 
 # Configure clients to use NFS <a name="obj7"></a>
@@ -397,3 +458,5 @@ _Perform Red Hat Storage Server management tasks such as tuning volume options, 
 [8]: https://github.com/beloglazov/openstack-centos-kvm-glusterfs/issues/13
 [9]: https://lists.gnu.org/archive/html/gluster-devel/2012-12/msg00031.html
 [10]: http://www.amitnepal.com/gluster-filesystem-troubleshooting/
+[11]: http://www.server-world.info/en/note?os=CentOS_7&p=glusterfs
+[12]: http://gluster.org/community/documentation/index.php/Gluster_3.1:_Expanding_Volumes 
