@@ -30,7 +30,7 @@ This is the first in my series of posts for each of the five exams I will take t
 
 # Introduction <a name="intro"></a>
 
-This exam covers the subject of the Red Hat Storage Server product which is the comercially supported solution that Red Hat offers. If you want to study for this exam without having to purchase a support licence there is a [solution][1] suggested by the GlusterFS team themselves: use the community version of glusterfs-server. 
+This exam covers the subject of the Red Hat Storage Server product which is the comercially supported solution that Red Hat offers. If you want to study for this exam without having to purchase a support licence there is a [solution][1] suggested by the GlusterFS team themselves: use the community version of glusterfs-server. Note: as firewall configuration is not an objective for this exam, I am assuming there is no firewall on either client or nodes in the following examples. 
 
 The Gluster team provide a link to the main download site for GlusterFS but since I am using CentOS it will be easier to use the repo with yum. It wasn't obvious to me at first but there is a repo available for CentOS 7 buried a few levels deep:
 
@@ -337,7 +337,7 @@ I'll have a client use this volume. The gluster docs on installing the native cl
 The gluster docs say to install several packages for the native client but I didn't have much luck that way. I did have success using the instructions from [this][11] guide from server-world.
 
     [root@client ~]# wget http://download.gluster.org/pub/gluster/glusterfs/LATEST/CentOS/glusterfs-epel.repo -O /etc/yum.repos.d/glusterfs-epel.repo 
-    [root@client ~]# yum -y install glusterfs glusterfs-fuse
+    [root@client ~]# yum install glusterfs glusterfs-fuse -y
     [root@client ~]# mkdir gluster
     [root@client ~]# mount -t glusterfs node1.pequeno.in:/strp-vol gluster/
     [root@client gluster]# df -h
@@ -414,15 +414,191 @@ and http://www.slashroot.in/gfs-gluster-file-system-complete-tutorial-guide-for-
 # Configure clients to use NFS <a name="obj7"></a>
 _Configure clients to use Red Hat Storage Server appliance volumes using native and network file systems (NFS)_
 
+This objective is very straight-forward. If you've set up NFS on RHEL before the process is identical, and there is no considerable difference on the node side of things. 
+
+First, `node1`:
+
+    [root@node1 ~]# yum install glusterfs-server -y
+    [root@node1 ~]# fdisk /dev/xvdb
+    [root@node1 ~]# mkfs.xfs -i size=512 /dev/xvdb5
+    [root@node1 ~]# mkdir /glusterfs
+    [root@node1 ~]# mount /dev/xvdb5 /glusterfs/
+    [root@node1 ~]# mkdir /glusterfs/distributed
+    [root@node1 ~]# gluster volume create dist \
+    > node1.pequeno.in:/glusterfs/distributed/;
+    volume create: dist: success: please start the volume to access data
+    [root@node1 ~]# gluster volume start dist
+    volume start: dist: success
+
+Then the `client`:
+    
+    [root@client ~]# yum install nfs-utils -y
+    [root@client ~]# mkdir remote
+    [root@client ~]# mount -t nfs node1.pequeno.in:/dist remote/
+    [root@client ~]# touch remote/testfile
+
+
+We can verify the file `testfile` was created on `node1`:
+
+    [root@node1 ~]# ls /glusterfs/distributed/
+    testfile
+
+That's about it!
+
 # Configure clients to use SMB <a name="obj8"></a>
 _Configure clients to use Red Hat Storage Server appliance volumes using SMB_
 
+To configure clients to use SMB the process is nearly identical to the way that you would configure a typical SMB share.
+
+> Note: You must repeat these steps on each Gluster node. For more advanced configurations, see Samba documentation.
+
+First, `node1`:
+
+    [root@node1 ~]# yum install glusterfs-server -y
+    [root@node1 ~]# fdisk /dev/xvdb
+    [root@node1 ~]# mkfs.xfs -i size=512 /dev/xvdb5
+    [root@node1 ~]# mkdir /glusterfs
+    [root@node1 ~]# mount /dev/xvdb5 /glusterfs/
+    [root@node1 ~]# mkdir /glusterfs/distributed
+    [root@node1 ~]# gluster volume create dist \
+    > node1.pequeno.in:/glusterfs/distributed/;
+    volume create: dist: success: please start the volume to access data
+    [root@node1 ~]# gluster volume start dist
+    volume start: dist: success
+
+Now, still on `node1` we'll have to configure Samba as well. There are ways to create public samba shares that do not require a username and password for authentication but that leads a little further into a lesson on how Samba works rather than gluster, so I'll just create a user to test this configuration.
+
+
+    [root@node1 ~]# yum install samba samba-client -y
+    [root@node1 ~]# vim /etc/samba/smb.conf 
+    [root@node1 ~]# useradd gfstest
+    [root@node1 ~]# smbpasswd -a gfstest
+    Added user gfstest.
+    [root@node1 ~]# systemctl restart smb.service
+    [root@node1 ~]# testparm
+    Load smb config files from /etc/samba/smb.conf
+    rlimit_max: increasing rlimit_max (1024) to minimum Windows limit (16384)
+    Processing section "[gluster]"
+    Loaded services file OK.
+    Server role: ROLE_STANDALONE
+    Press enter to see a dump of your service definitions
+    
+    [global]
+        workgroup = MYGROUP
+        server string = Samba Server Version %v
+        log file = /var/log/samba/log.%m
+        max log size = 50
+        idmap config * : backend = tdb
+        cups options = raw
+    
+    [gluster]
+        comment = Gluster over SMB!
+        path = /glusterfs/distributed
+        valid users = gfstest
+        read only = No
+        guest ok = Yes
+
+This is BAD AND NOT RECOMENDED but to simplify permission issues I'm going to make /glusterfs/distributed accessible to everyone and everything. This step is necessary if you want to be able to write to the share.
+
+    [root@node1 ~]# chmod -R 777 /glusterfs/distributed/
+
+
+Now I can configure the client to look for that CIFS share:
+
+   [root@client ~]# yum install cifs-utils -y
+   [root@client ~]# mount -t cifs //node1.pequeno.in/gluster -o rw,username=gfstest,password=123456 sambashare/
+   [root@client ~]# cd sambashare/
+   [root@client sambashare]# touch testfile
+   [root@client sambashare]# ls
+   testfile
 
 
 # Configure quotas and ACLs <a name="obj9"></a>
 _Configure Red Hat Storage Server features including disk quotas and POSIX access control lists (ACLs)_
 
-http://gluster.org/community/documentation/index.php/Gluster_3.2:_Enabling_Quota
+I'll begin by configuring `node1` and `node2` similarly:
+ 
+    [root@node1 ~]# yum install glusterfs-server -y
+    [root@node1 ~]# fdisk /dev/xvdb
+    [root@node1 ~]# mkfs.xfs -i size=512 /dev/xvdb5
+    [root@node1 ~]# mkdir /glusterfs
+    [root@node1 ~]# mount /dev/xvdb5 /glusterfs/
+    [root@node1 ~]# mkdir /glusterfs/distributed
+
+I'll make some changes specifically on `node1`
+
+    [root@node1 ~]# gluster volume create dist \
+    > node1.pequeno.in:/glusterfs/distributed/ \
+    > node2.pequeno.in:/glusterfs/distributed/;
+    volume create: dist: success: please start the volume to access data
+    [root@node1 ~]# gluster volume start dist
+    volume start: dist: success
+    [root@node1 ~]# gluster volume quota dist enable
+    volume quota : success
+    [root@node1 ~]# gluster volume quota dist limit-usage / 2GB
+    volume quota : success
+
+I'll configure the client this way:
+
+    [root@client ~]# wget http://download.gluster.org/pub/gluster/glusterfs/LATEST/CentOS/glusterfs-epel.repo -O /etc/yum.repos.d/glusterfs-epel.repo 
+    [root@client ~]# yum install glusterfs glusterfs-fuse -y
+    [root@client ~]# mkdir gfs
+    [root@client ~]# mount -t glusterfs node1.pequeno.in:/dist gfs/
+
+And when I try to write a file that is larger than the 2GB limit put in place:
+
+    [root@client gfs]# dd if=/dev/zero of=bigfile bs=1M count=3000
+    dd: error writing ‘bigfile’: Disk quota exceeded
+    dd: closing output file ‘bigfile’: Disk quota exceeded
+    [root@client gfs]# ls -lh
+    total 2.1G
+    -rw-r--r--. 1 root root 2.1G Oct 19 00:25 bigfile
+
+
+There are two types of ACLs available for use with gluster, 'access' and 'default'.
+
+> You can set two types of POSIX ACLs, that is, access ACLs and default ACLs. You can use access ACLs to grant permission for a specific file or directory. You can use default ACLs only on a directory but if a file inside that directory does not have an ACLs, it inherits the permissions of the default ACLs of the directory. [gluster.org][14]
+
+To enable ACLs from the client side, we have to mount the drive using the `acl` option.
+
+    [root@client gfs]# mkdir allow
+    [root@client gfs]# mkdir deny
+    [root@client gfs]# useradd alice
+    [root@client ~]# mkdir /home/shared
+    [root@client ~]# mount -t glusterfs -o acl node1.pequeno.in:/dist /home/shared/
+
+On the server we must create the users as well. There, we can create the ACLs:
+
+    [root@node1 distributed]# useradd alice
+    [root@node1 distributed]# setfacl -m u:alice:rwx allow/
+    [root@node1 distributed]# setfacl -m u:alice:--- deny/
+
+From the client we can see the effect of these changes:
+   
+    [root@client ~]# su alice
+    [alice@client root]$ cd /home/shared/
+    [alice@client shared]$ ls
+    allow  deny
+    [alice@client shared]$ cd allow/
+    [alice@client allow]$ touch alicefile
+    [alice@client allow]$ ls
+    alicefile
+    [alice@client allow]$ cd ..
+    [alice@client shared]$ cd deny/
+    bash: cd: deny/: Permission denied
+    [alice@client shared]$ getfacl allow/
+    # file: allow/
+    # owner: root
+    # group: root
+    user::rwx
+    user:alice:rwx
+    user:bob:rwx
+    group::r-x
+    mask::rwx
+    other::r-x
+
+
+
 
 # Configure IP failover for NFS-and SMB-based cluster services <a name="obj10"></a>
 
@@ -453,10 +629,20 @@ A quick google search came up with [this][9] mailing list thread which solves th
 
     [root@client ~]# mount -t glusterfs node1.pequeno.in:/strp-vol gluster/
 
+While writing the quotas section I came across this message:
 
+    [root@node1 ~]# gluster volume quota dist limit-usage /glusterfs/distributed/ 5GB
+    quota command failed : Failed to get trusted.gfid attribute on path /glusterfs/distributed/. Reason : No such file or directory
 
-  
+Again I had a syntax error. The gluster docs [say][13]:
 
+> The directory name should be relative to the volume with the export directory/mount being treated as "/". 
+
+So the command I should have ran was:
+
+    [root@node1 ~]# gluster volume quota dist limit-usage / 5GB
+
+Which will limit the usage of all of `dist` to 5GB
 
 # Monitor Red Hat Storage Server workloads <a name="obj14"></a>
 
@@ -475,3 +661,5 @@ _Perform Red Hat Storage Server management tasks such as tuning volume options, 
 [10]: http://www.amitnepal.com/gluster-filesystem-troubleshooting/
 [11]: http://www.server-world.info/en/note?os=CentOS_7&p=glusterfs
 [12]: http://gluster.org/community/documentation/index.php/Gluster_3.1:_Expanding_Volumes 
+[13]: http://gluster.org/community/documentation/index.php/Gluster_3.2:_Setting_or_Replacing_Disk_Limit
+[14]: http://gluster.org/community/documentation/index.php/Gluster_3.2:_Setting_POSIX_ACLs
