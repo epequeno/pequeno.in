@@ -598,8 +598,6 @@ From the client we can see the effect of these changes:
     other::r-x
 
 
-
-
 # Configure IP failover for NFS-and SMB-based cluster services <a name="obj10"></a>
 
 https://access.redhat.com/documentation/en-US/Red_Hat_Storage/2.0/html/Administration_Guide/ch09s04.html
