@@ -26,3 +26,5 @@ This exam covers deploying
 http://www.techexams.net/forums/lpi-rhce-sair/100463-rhca-ex401-resources.html
 https://access.redhat.com/documentation/en-US/Red_Hat_Satellite/6.0/html/Installation_Guide/index.html
 http://www.katello.org/
+
+    wget http://www.jpackage.org/jpackage50.repo
