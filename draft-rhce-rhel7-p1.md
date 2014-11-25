@@ -10,8 +10,6 @@ This is the first in a three part series covering the objectives for the Red Hat
 
 Each part will follow the objectives as they have been outlined by [Red Hat][1].
 
-Here are the objectives that will be covered in this document:
-
 * [Use network teaming or bonding to configure aggregated network links between two Red Hat Enterprise Linux systems](#obj1)
 * [Configure IPv6 addresses and perform basic IPv6 troubleshooting](#obj2)
 * [Route IP traffic and create static routes](#obj3)
@@ -69,17 +67,42 @@ Notice that the name follows the directory structure within /proc/sys.
 
 # Configure a system to authenticate using Kerberos
 
+You'll need the `authconfig` package which will give you the `authconfig-tui` program which makes configuring a system to use kerberos very, very easy.
+
+    yum install -y krb5-workstation pam_krb5
+    authconfig-tui
+    domain PEQUENO.in
+    kdc krb.pequeno.in
+    admin krb.pequeno.in
+    # kinit test1
+    ssh test1@krb.pequeno.in
 
 
 # Configure a system as either an iSCSI target or initiator
 
 The full objective is: _Configure a system as either an iSCSI target or initiator that persistently mounts an iSCSI target_
 
+http://www.server-world.info/en/note?os=CentOS_7&p=iscsi
+Target:
+    yum -y install targetcli 
+
 
 
 # Produce and deliver reports on system utilization (processor, memory, disk, and network)
 
+I think the idea here is to get familiar with the `sar` command to generate reports on system utilization. A very quick way to cover all your bases is to get `sar` to give you everything (`-A`) and dump it into a file:
+
+    [root@sysconfig #] sar -A > system-info.txt
+
+Generally, get familiar with `sar`s flags. How you produce reports and what you report on will depend on how they ask the question on the exam.
+
 # Use shell scripting to automate system maintenance tasks
+
+Again, how you solve this problem depends on exactly what they ask you to do on the exam. But let's make up a scenario that will demonstrate how we'd be able to do some common administration tasks with some scripts.
+
+cron generate a bunch of files then clear them out maybe random size, remove if larger than some value
+update the welcome message based on time of day
+clear out the contents of home folders 
 
 
 

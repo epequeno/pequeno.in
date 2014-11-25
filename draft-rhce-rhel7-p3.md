@@ -10,8 +10,6 @@ This is the final in a three part series covering the objectives for the Red Hat
 
 Each part will follow the objectives as they have been outlined by [Red Hat][1].
 
-Here are the objectives that will be covered in this document:
-
 * [Install and configure MariaDB](#obj1)
 * [Backup and restore a database](#obj2)
 * [Create a simple database schema](#obj3)
