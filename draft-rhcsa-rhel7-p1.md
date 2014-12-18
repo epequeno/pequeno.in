@@ -1,11 +1,10 @@
 ---
 layout: post
-title: "RHCSA - RHEL7 - Part 1"
+title: "RHCSA - RHEL7"
 published: true
 ---
 
-This is the first in a 7 part series covering the RHCSA objectives for RHEL7.
-
+This document is a 
 
 Understand and use essential tools
 
