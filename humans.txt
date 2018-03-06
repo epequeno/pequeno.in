@@ -1,0 +1,15 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+
+    Estevan Adrian Pequeno -- dev -- @epequeno
+
+# THANKS
+
+    caffeine
+
+# TECHNOLOGY COLOPHON
+    
+    S3
+    html    
