@@ -23,3 +23,4 @@ yum install luci ricci
   * Creating replicated clusters
   * Implementing and utilizing appropriate file systems
 
+  
