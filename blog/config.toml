@@ -1,0 +1,41 @@
+# The URL the site will be built for
+base_url = "https://pequeno.in/blog"
+title = "thing"
+description = "stuff"
+language_code = "en"
+
+# Highlight all code blocks found
+highlight_code = true
+
+# Which theme to use for the code highlighting.
+# See below for list of accepted values
+highlight_theme = "base16-ocean-dark"
+
+# Whether to generate a RSS feed automatically
+generate_rss = true
+
+# The number of articles to include in the RSS feed
+rss_limit = 20
+
+# Whether to generate a tags page and individual
+# tag pages for pages with tags
+generate_tags_pages = false
+
+# Whether to generate a categories page and individual
+# category pages for pages with a category
+generate_categories_pages = false
+
+# Whether to automatically compile all Sass files in the sass directory
+compile_sass = true
+
+[extra]
+# Put all your custom variables here
+author = "Steven Pequeno"
+theme = "hyde"
+hyde_theme = "default"
+hyde_reverse = true
+hyde_sticky = true
+hyde_links = [
+    {url = "/", name = "Home"},
+    {url = "/blog/about", name = "About"},
+    ]
