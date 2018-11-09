@@ -11,12 +11,12 @@
 
       <!-- CSS -->
       <link rel="stylesheet" href="/blog/print.css" media="print">
-      <link rel="stylesheet" href="/blog/poole.css") | safe }}">
-      <link rel="stylesheet" href="/blog/hyde.css")  | safe }}">
-      <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+      <link rel="stylesheet" href="/blog/poole.css">
+      <link rel="stylesheet" href="/blog/hyde.css">
+      <link rel="stylesheet" href="/static/fonts.css">
 
       {% if config.generate_rss %}
-        <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ get_url(path="rss.xml") }}">
+        <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ get_url(path="rss.xml")|safe }}">
       {% endif %}
 
       {% block extra_head %}
@@ -29,7 +29,7 @@
                 <div class="container {% if config.extra.hyde_sticky %}sidebar-sticky{% endif %}">
                     <div class="sidebar-about">
                         {% block sidebar_about %}
-                            <a href="{{ config.base_url }}"><h1>{{ config.title }}</h1></a>
+                            <a href="{{ config.base_url|safe }}"><h1>{{ config.title }}</h1></a>
                             {% if config.description %}
                             <p class="lead">{{config.description}}</p>
                             {% endif %}
@@ -39,7 +39,7 @@
                     <ul class="sidebar-nav">
                         {% block sidebar_nav %}
                         {% for link in config.extra.hyde_links %}
-                        <li><a href="{{link.url}}">{{link.name}}</a></li>
+                        <li><a href="{{link.url|safe}}">{{link.name}}</a></li>
                         {% endfor %}
                         {% endblock sidebar_nav %}
                     </ul>
@@ -63,7 +63,7 @@
                         <hr>
                     {% endfor %}
 		    </ul>
-		    <hr><
+		    <hr>
                 </div>
             {% endblock content %}
         </div>
