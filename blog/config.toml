@@ -37,5 +37,5 @@ hyde_reverse = true
 hyde_sticky = true
 hyde_links = [
     {url = "/", name = "Home"},
-    {url = "/blog/about", name = "About"},
+    {url = "/blog/about/", name = "About"},
     ]
