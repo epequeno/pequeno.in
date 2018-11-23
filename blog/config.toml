@@ -1,7 +1,7 @@
 # The URL the site will be built for
-base_url = "https://pequeno.in/blog"
-title = "thing"
-description = "stuff"
+base_url = "https://pequeno.in/blog/"
+# title = "epequeno"
+description = "epequeno/blog"
 language_code = "en"
 
 # Highlight all code blocks found
@@ -33,9 +33,10 @@ compile_sass = true
 author = "Steven Pequeno"
 theme = "hyde"
 hyde_theme = "default"
-hyde_reverse = true
+# hyde_reverse = true
 hyde_sticky = true
 hyde_links = [
-    {url = "/", name = "Home"},
-    {url = "/blog/about/", name = "About"},
+    {url = "/", name = "home"},
+    {url = "/blog/", name = "blog"},
+    {url = "/blog/about/", name = "about"},
     ]

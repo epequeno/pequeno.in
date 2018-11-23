@@ -7,7 +7,7 @@
       <!-- Enable responsiveness on mobile devices-->
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 
-      <title>{% block title %}{{ config.title }}{% endblock title %}</title>
+      <title>{% block title %}{{ section.title }}{% endblock title %}</title>
 
       <!-- CSS -->
       <link rel="stylesheet" href="/blog/print.css" media="print">
@@ -29,7 +29,7 @@
                 <div class="container {% if config.extra.hyde_sticky %}sidebar-sticky{% endif %}">
                     <div class="sidebar-about">
                         {% block sidebar_about %}
-                            <a href="{{ config.base_url|safe }}/"><h1>{{ config.title }}</h1></a>
+                            <a href="{{ config.base_url|safe }}"><h1>{{ config.title }}</h1></a>
                             {% if config.description %}
                             <p class="lead">{{config.description}}</p>
                             {% endif %}
@@ -47,27 +47,22 @@
             </div>
         {% endblock sidebar %}
 
-        <div class="content container">
-            {% block content %}
-                <div class="posts">
-                    {% for page in section.pages %}
-                      <div class="post">
-                        <h1 class="post-title">
-                          <a href="{{ page.permalink }}">
-                            {{ page.title }}
-                          </a>
-                        </h1>
 
-                        <span class="post-date">Published on {{ page.date | date(format="%Y-%m-%d") }}</span>
-                        {{ page.content | safe }}
-                        <hr>
-                    {% endfor %}
-		    </ul>
-		    <hr>
-                </div>
-            {% endblock content %}
-        </div>
+    <div class="content">
+        {% block content %}
+            <div class="list-posts">
+                {% set posts = get_section(path="post/_index.md") %}
+                {% for page in posts.pages %}
+                    <article class="post">
+                        <h3 class="post__title"><a style="color:black" href="{{ page.permalink }}">{{ page.title }}</a> | <small>{{page.date}}</small></h3>
+                    </article>
+                {% endfor %}
+            </div>
+        {% endblock content %}
+    </div>
 
     </body>
 
 </html>
+
+
