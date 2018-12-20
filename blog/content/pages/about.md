@@ -6,6 +6,7 @@ path = "/about"
 
 Hi there, I'm Steven Pequeno. Here I am on the internet:
 
+- <a href="https://keybase.io/epequeno" target="_blank">keybase/epequeno</a>
 - <a href="https://github.com/epequeno" target="_blank">github/epequeno</a>
 - <a href="https://twitter.com/epequeno" target="_blank">twitter/epequeno</a>
 - <a href="https://exercism.io/profiles/epequeno" target="_blank">exercism/epequeno</a>
