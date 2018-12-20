@@ -1,0 +1,74 @@
+==================================================================
+https://keybase.io/epequeno
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://pequeno.in
+  * I am epequeno (https://keybase.io/epequeno) on keybase.
+  * I have a public key with fingerprint F0CA 24CE D7EC 66B8 5B12  E2AB 9E46 0540 FEA6 A643
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "010119d2c85dbcfb633d64f2159821e76fdd176838750d570551236a6c4496bd4fbe0a",
+      "fingerprint": "f0ca24ced7ec66b85b12e2ab9e460540fea6a643",
+      "host": "keybase.io",
+      "key_id": "9e460540fea6a643",
+      "kid": "010119d2c85dbcfb633d64f2159821e76fdd176838750d570551236a6c4496bd4fbe0a",
+      "uid": "c837adfe5348c0d7e29e766a1c6c6100",
+      "username": "epequeno"
+    },
+    "service": {
+      "hostname": "pequeno.in",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 1
+  },
+  "ctime": 1545345991,
+  "expire_in": 157680000,
+  "prev": "18f583ad3b97e55a8b785420ce791ac047212bc9bad789ac4c57b346ef154a1e",
+  "seqno": 22,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+-----BEGIN PGP MESSAGE-----
+Version: Keybase OpenPGP v2.0.80
+Comment: https://keybase.io/crypto
+
+yMNBAnicrZJrTJNXGMcLDqU4UBHnpYDmZRqGLXvvFzLRBeeGVOKQ4SBgfS+n5V1r
+W3oBgRAdMkRAh4iKOC4DobKZaYYgiYBImUhqiIYMo7L7/LAx4ybBRRTZeQn7to87
+X07Ok9////yfJ2cweIEqyK9hW8CWl21tCX6+66fcqsxwzVAhItikfCSuEDGDuQtY
+JOB0GcyyhMQhKIZiGCfhIktJgmgUaIKQaNKIYxTH4hhgaKMkYQzNEixDoRLFoBSF
+4QTN0yJJcrQgkUYBoDyiRYyy1QQcdodsdUFbIyryOCkCiQEiTQssJWA4wHmBAySN
+UiRqBDz0IAkozLY5FQUMJ/BOECvbYA0+DHPx/oP/n3O75+xElmB4yQgogmRFFKbG
+OehB85hIizSGogroBA4rvw9AGthBjhtYbUiRFoHVXFkEymKVSeaJeSBWtkKl3WFz
+2USbBdazXS67M07RufLtCpgHBMO8hUGQrRLcIlTkAodTtlmROAySoktWPDGKhOko
+jsO0CNhvlx3AICsEBadE4VH6gFxoibFGiiV4iRA4BlAUzwoMS5E4KgKGw3gRJRkc
+wwWRE3iJYTleJEWKEQiSBkbYgscAogyVA6eLw3GYkzdBT6dssvIutwMgRQPXM19R
++QWpFgb4K99LFaRe+u+nm2lbMvtBWeeD0V8WZiz/eeRP3ns5oL6vqmp9Znug9U7y
+qoju8OnkAXRJkn53ky8m48OvNr2hNZ3wvMvt+jvUQ53R8OX36lK8ww2la2IuuVTO
+wj2/hX5uHpt4+Ht3ZFe09p3mncnppUlFjcvG9j4i6JSp000FP72oGWpurNr1vGD7
+46yzhOZpZ0bmgUVXLfGxY5MVmrSmq/knUrPWPbvfbQu5uOLmobc7kBUdVy531JUG
+7mnanHf4yrnW0R1+XTNbir1jiU/7U8d73Ehv3nRE/fJFzzfqIh6u++Mz/XB3SXHq
+MFNbHhm99xbSpy8beG8k03c+XXfkeNXpxRe4Q7/WHSlJ6yOjCtQLbo5N+Pc8jhw5
+tfjsbK0+xNJ+cHSWu313M1ldvvtoWvjG7rDvfghuPLoh7aLla/OoLj5kqGHTszv9
+xFJbdoyv92ROSYLbWdsbuEPX0qlRrfYXJ1bqW/J64me+LxvWneRfhq1HE7Nen56p
+uWBPNK0cvHVpPOnwmnjMlT8eXkm85d3flz6lnr7tIGfaO79sbF5b5zZUBo88+fTj
+Y+EHrp2rUU3EhubvnG0tLh8/Niifv+vV9Ec1a7ZqV4GosKTj5ZGfTKi+rUwpuNZl
+Vr85Fe27kVK99cX7nOe1DUlfVDS0/thR0WZ6tHrZDYuv/r7ur3sPtE8mSzwJ1ds8
+k2ptzasftckj6S37Dn7zD4YFvWI=
+=j1bB
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/epequeno
+
+==================================================================
