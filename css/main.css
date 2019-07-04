@@ -1,8 +1,11 @@
 #avatar {
     width: 320px;
-    padding-bottom: 2%;
 }
 
 .row {
     padding-top: 5%;
+}
+
+.emoji {
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"
 }
